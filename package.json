@@ -18,13 +18,13 @@
     "swr": "^1.0.0"
   },
   "devDependencies": {
-    "autoprefixer": "^10.2.6",
+    "autoprefixer": "^10.3.4",
     "eslint": "^7.29.0",
     "eslint-config-google": "^0.14.0",
     "eslint-config-next": "11.0.0",
     "eslint-plugin-react": "^7.24.0",
-    "postcss": "^8.3.5",
+    "postcss": "^8.3.6",
     "sass": "^1.35.1",
-    "tailwindcss": "^2.2.4"
+    "tailwindcss": "^2.2.15"
   }
 }
