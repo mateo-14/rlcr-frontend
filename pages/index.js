@@ -76,10 +76,20 @@ const Form = () => {
       ) : (
         <>
           <div className="w-full flex h-10 mb-8">
-            <TabButton onClick={() => changeMode(0)} disabled={!settings?.buyEnabled} selected={mode === 0} side="l">
+            <TabButton
+              onClick={() => changeMode(0)}
+              disabled={!settings?.buyEnabled}
+              selected={mode === 0}
+              rounded="rounded-l-xl"
+            >
               Comprar
             </TabButton>
-            <TabButton onClick={() => changeMode(1)} disabled={!settings?.sellEnabled} selected={mode === 1} side="r">
+            <TabButton
+              onClick={() => changeMode(1)}
+              disabled={!settings?.sellEnabled}
+              selected={mode === 1}
+              rounded="rounded-r-xl"
+            >
               Vender
             </TabButton>
           </div>
@@ -142,10 +152,10 @@ const Form = () => {
   );
 };
 
-const TabButton = ({ children, selected, disabled, onClick, side }) => {
+const TabButton = ({ children, selected, disabled, onClick, rounded }) => {
   return (
     <button
-      className={`flex-1 font-medium rounded-${side}-xl text-black text-sm uppercase disabled:opacity-50 ${
+      className={`flex-1 font-medium ${rounded} text-black text-sm uppercase disabled:opacity-50 ${
         selected ? 'bg-purple-500 text-white' : 'bg-gray-600 text-gray-300'
       }`}
       onClick={onClick}
