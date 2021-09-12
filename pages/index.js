@@ -1,16 +1,56 @@
-import Layout from '../components/Layout';
-import { useState } from 'react';
-import styles from '../styles/Home.module.scss';
 import { useRouter } from 'next/router';
+import React, { useContext, useEffect, useState } from 'react';
+import Layout from '../components/Layout';
+import Button from '../components/UI/Button';
+import Input from '../components/UI/Input';
+import { SettingsContext } from '../contexts/SettingsContext';
 
-const Form = ({ mode, constants }) => {
+const useMode = (settings) => {
+  const [mode, setMode] = useState(!settings || settings?.buyEnabled ? 0 : 1);
+
+  useEffect(() => {
+    if (!settings) return;
+    if (mode === 0 && !settings?.buyEnabled && settings?.sellEnabled) {
+      setMode(1);
+    } else if (mode === 1 && !settings?.sellEnabled) {
+      setMode(0);
+    }
+  }, [settings?.sellEnabled, settings?.buyEnabled]);
+
+  return { mode, changeMode: setMode };
+};
+
+// Components
+export default function Home() {
+  return (
+    <Layout>
+      <section className="grid grid-cols-1 xl:grid-cols-index content-center items-center gap-x-16 gap-y-6 my-auto">
+        <div className="mx-2 sm:mx-0">
+          <p className="text-4xl xl:text-5xl font-medium text-white">
+            Compra créditos para Rocket League en pesos argentinos y sin impuestos!
+          </p>
+          <p className="text-4xl xl:text-5xl font-medium text-purple-500 mt-2">+100 transacciones realizadas!</p>
+        </div>
+        <Form />
+        <p className="text-white mx-2 sm:mx-0">
+          * Solo venta de créditos para PC (Steam y Epic Games)
+          <br />* Pagos por transferencia bancaria, enviar dinero por UALÁ y MercadoPago
+          <br />* Solo válido para Argentina
+        </p>
+      </section>
+    </Layout>
+  );
+}
+
+const Form = () => {
+  const settings = useContext(SettingsContext);
   const router = useRouter();
+  const { mode, changeMode } = useMode(settings);
   const [credits, setCredits] = useState(100);
-  const [mp, setMp] = useState(0);
-  const max = mode == 0 ? constants.MAX_SELL : constants.MAX_BUY;
+  const [pm, setPm] = useState(settings?.paymentMethods[0].id);
+  const max = mode == 0 ? settings?.maxBuy : settings?.maxSell;
 
   const handleChange = ({ currentTarget }) => {
-    console.log(currentTarget.value);
     setCredits(currentTarget.value);
   };
 
@@ -21,92 +61,114 @@ const Form = ({ mode, constants }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    router.push({ pathname: '/checkout/[mode]/[mp]/[amount]', query: { mode, mp, amount: credits } });
+    const dataB64 = Buffer.from(JSON.stringify({ mode, credits, paymentMethodID: parseInt(pm) })).toString('base64');
+    router.push({ pathname: '/checkout', query: { c: dataB64 } });
   };
 
   const handleSelectChange = ({ currentTarget }) => {
-    setMp(currentTarget.value);
+    setPm(currentTarget.value);
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div className={styles.form_input}>
-        <label>{mode == 0 ? 'Cuántos créditos querés?' : 'Cuántos créditos querés vender?'}</label>
-        <input
-          type="number"
-          value={credits}
-          min="100"
-          max={max}
-          step="10"
-          onChange={handleChange}
-          onBlur={handleBlur}
-        />
-      </div>
-      <div className={styles.form_input}>
-        <label>{mode == 0 ? 'Pagas' : 'Te pago'} (Pesos argentinos)</label>
-        <input
-          type="number"
-          value={credits * (mode == 0 ? constants.PESO_X_CREDIT_SELL : constants.PESO_X_CREDIT_BUY)}
-          min="100"
-          max={max}
-          step="10"
-          onChange={handleChange}
-          onBlur={handleBlur}
-          disabled={mode != 0}
-        />
-      </div>
-      <div className={styles.form_input}>
-        <label>Método de pago</label>
-        <select value={mp} onChange={handleSelectChange}>
-          <option value={0}> Transferencia bancaria</option>
-          <option value={1}>Enviar dinero por UALÁ</option>
-          <option value={2}>Enviar dinero por MercadoPago</option>
-        </select>
-      </div>
-      <button className={styles.button}>Continuar</button>
-    </form>
+    <div className="lg:row-span-2 bg-gray-700 sm:rounded-xl sm:shadow-xl px-6 py-10">
+      {settings && !settings.sellEnabled && !settings.buyEnabled ? (
+        <p className="text-center text-white text-5xl font-medium">Compra y venta deshabilitada 🙁</p>
+      ) : (
+        <>
+          <div className="w-full flex h-10 mb-8">
+            <TabButton onClick={() => changeMode(0)} disabled={!settings?.buyEnabled} selected={mode === 0} side="l">
+              Comprar
+            </TabButton>
+            <TabButton onClick={() => changeMode(1)} disabled={!settings?.sellEnabled} selected={mode === 1} side="r">
+              Vender
+            </TabButton>
+          </div>
+          <form onSubmit={handleSubmit}>
+            {!settings ? (
+              <FormSkeleton />
+            ) : (
+              <>
+                <Input
+                  type="number"
+                  id="credits"
+                  value={credits}
+                  min="100"
+                  max={max}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  hint="CR"
+                  step="10"
+                  label={mode == 0 ? 'Cuántos créditos querés?' : 'Cuántos créditos querés vender?'}
+                />
+                <Input
+                  type="number"
+                  id="price"
+                  value={credits * (mode == 0 ? settings?.creditBuyValue : settings?.creditSellValue)}
+                  min="100"
+                  max={max}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  hint="$"
+                  step="10"
+                  label={`${mode == 0 ? 'Pagas' : 'Te pagamos'} ARS$ (Pesos argentinos)`}
+                  disabled={mode != 0}
+                  className="mt-4"
+                />
+                <div className="mt-4">
+                  <label htmlFor="paymentmet" className="block text-lg text-white">
+                    Método de pago
+                  </label>
+                  <select
+                    id="paymentmet"
+                    className="focus:outline-none mt-1 w-full p-2 text-lg rounded-xl bg-gray-600 text-gray-300 focus:text-white"
+                    onChange={handleSelectChange}
+                  >
+                    {settings?.paymentMethods.map((method) => (
+                      <option value={method.id} key={method.id}>
+                        {method.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </>
+            )}
+            <Button className="mt-8 w-full" disabled={!settings}>
+              Continuar
+            </Button>
+          </form>
+        </>
+      )}
+    </div>
   );
 };
 
-export default function Home({ constants }) {
-  const [mode, setMode] = useState(0);
-
+const TabButton = ({ children, selected, disabled, onClick, side }) => {
   return (
-    <Layout>
-      <section className={styles.info_section}>
-        <h1 className={styles.title}>
-          Comprar créditos para Rocket League en <span>pesos argentinos y sin impuestos!</span>
-        </h1>
-        <p>
-          * Solo venta de créditos para PC (Steam y Epic Games)
-          <br />* Pagos por transferencia bancaria, enviar dinero por UALÁ y MercadoPago
-          <br />* Solo válido para Argentina
-        </p>
-      </section>
-      <section className={styles.form_section}>
-        <div className={styles.tab}>
-          <button className={mode == 0 ? styles.selected : ''} onClick={() => setMode(0)}>
-            Comprar
-          </button>
-          <button className={mode == 1 ? styles.selected : ''} onClick={() => setMode(1)}>
-            Vender
-          </button>
-        </div>
-        <Form mode={mode} constants={constants} />
-      </section>
-    </Layout>
+    <button
+      className={`flex-1 font-medium rounded-${side}-xl text-black text-sm uppercase disabled:opacity-50 ${
+        selected ? 'bg-purple-500 text-white' : 'bg-gray-600 text-gray-300'
+      }`}
+      onClick={onClick}
+      disabled={disabled}
+    >
+      {children}
+    </button>
   );
-}
+};
 
-export async function getStaticProps() {
-  //Esto vendría desde una base de datos del sv
-  const MAX_SELL = 3000;
-  const MAX_BUY = 1000;
-  const PESO_X_CREDIT_SELL = 1;
-  const PESO_X_CREDIT_BUY = 0.75;
-  return {
-    props: {
-      constants: { MAX_SELL, MAX_BUY, PESO_X_CREDIT_BUY, PESO_X_CREDIT_SELL },
-    },
-  };
-}
+const FormSkeleton = () => (
+  <div className="space-y-5">
+    <div className="animate-pulse space-y-2">
+      <div className="h-6 bg-gray-500 rounded w-2/5"></div>
+      <div className="h-10 bg-gray-500 rounded"></div>
+    </div>
+    <div className="animate-pulse space-y-2">
+      <div className="h-6 bg-gray-500 rounded w-2/5"></div>
+      <div className="h-10 bg-gray-500 rounded"></div>
+    </div>
+    <div className="animate-pulse space-y-2">
+      <div className="h-6 bg-gray-500 rounded w-2/5"></div>
+      <div className="h-10 bg-gray-500 rounded"></div>
+    </div>
+  </div>
+);

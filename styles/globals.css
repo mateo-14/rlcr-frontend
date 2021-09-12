@@ -4,6 +4,10 @@ body {
   margin: 0;
 }
 
+#__next {
+  height: 100%;
+}
+
 a {
   color: inherit;
   text-decoration: none;
