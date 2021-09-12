@@ -47,7 +47,7 @@ const Form = () => {
   const router = useRouter();
   const { mode, changeMode } = useMode(settings);
   const [credits, setCredits] = useState(100);
-  const [pm, setPm] = useState(settings?.paymentMethods[0].id);
+  const [pm, setPm] = useState(0);
   const max = mode == 0 ? settings?.maxBuy : settings?.maxSell;
 
   const handleChange = ({ currentTarget }) => {
@@ -132,6 +132,7 @@ const Form = () => {
                     id="paymentmet"
                     className="focus:outline-none mt-1 w-full p-2 text-lg rounded-xl bg-gray-600 text-gray-300 focus:text-white"
                     onChange={handleSelectChange}
+                    value={pm}
                   >
                     {settings?.paymentMethods.map((method) => (
                       <option value={method.id} key={method.id}>

@@ -136,7 +136,7 @@ const Form = ({ formData, onSubmit }) => {
       </p>
 
       <Button className="flex justify-center items-center h-12 w-full " disabled={isFetching}>
-        {isFetching ? <Loader color="white" size={8} /> : 'Confirmar'}
+        {isFetching ? <Loader color="text-white" size="w-8 h-8" /> : 'Confirmar'}
       </Button>
     </form>
   );
