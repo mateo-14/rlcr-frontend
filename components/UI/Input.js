@@ -1,4 +1,20 @@
-const Input = ({ value, max, min, onChange, onBlur, label, type, id, step, disabled, className, required, errors }) => {
+const Input = ({
+  value,
+  max,
+  min,
+  onChange,
+  onBlur,
+  label,
+  type,
+  id,
+  step,
+  disabled,
+  className,
+  required,
+  errors,
+  maxLength,
+  minLength,
+}) => {
   return (
     <div className={className}>
       <label htmlFor={id} className="block text-lg text-white">
@@ -19,6 +35,8 @@ const Input = ({ value, max, min, onChange, onBlur, label, type, id, step, disab
           disabled={disabled}
           step={step}
           required={required}
+          maxLength={maxLength}
+          minLength={minLength}
         />
         <p className="text-red-500 font-semibold">{errors?.[id]?.msg}</p>
       </div>

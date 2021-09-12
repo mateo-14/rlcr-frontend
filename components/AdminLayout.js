@@ -1,14 +1,12 @@
 import { useRouter } from 'next/router';
 import { useContext, useEffect } from 'react';
-import HeaderUser from '../../components/HeaderUser';
-import Orders from './Orders';
-import Users from './Users';
-import { UserContext } from '../../contexts/UserContext';
+import HeaderUser from '../components/HeaderUser';
+import { UserContext } from '../contexts/UserContext';
+import Link from 'next/link';
 
-export default function Admin() {
+export default function AdminLayout({ children }) {
   const user = useContext(UserContext);
   const router = useRouter();
-  const route = router.query.params?.[0];
 
   useEffect(() => {
     if (user.isReady && !user.data?.isAdmin) {
@@ -30,9 +28,7 @@ export default function Admin() {
                 <HeaderUser />
               </div>
             </header>
-            <div className="mx-10 mb-8 flex flex-col flex-1">
-              {/* {route === 'users' ? <Users /> : route === 'orders' ? <Orders /> : null} */}
-            </div>
+            <div className="mx-10 mb-8 flex flex-col flex-1">{children}</div>
           </main>
         </>
       ) : null}
@@ -42,13 +38,6 @@ export default function Admin() {
 
 const Menu = () => {
   const router = useRouter();
-  const route = router.query.params?.[0];
-
-  const handleClick = (id) => {
-    if (id !== route) {
-      router.push(`${id}`);
-    }
-  };
 
   return (
     <div className="m-6">
@@ -71,9 +60,8 @@ const Menu = () => {
               />
             </svg>
           }
-          id="users"
-          selectedID={route}
-          onClick={handleClick}
+          route="/admin/users"
+          selectedID={router.pathname}
         >
           Usuarios
         </MenuItem>
@@ -94,9 +82,8 @@ const Menu = () => {
               />
             </svg>
           }
-          id="orders"
-          selectedID={route}
-          onClick={handleClick}
+          route="/admin/orders"
+          selectedID={router.pathname}
         >
           Pedidos
         </MenuItem>
@@ -105,15 +92,15 @@ const Menu = () => {
   );
 };
 
-const MenuItem = ({ children, icon, selectedID, id, onClick }) => {
-  const handleClick = () => onClick(id);
-
+const MenuItem = ({ children, icon, selectedID, route }) => {
   return (
-    <li className={`ml-4 hover:text-gray-300 ${selectedID === id ? 'text-white' : 'text-gray-400'}`}>
-      <button className="w-full text-left py-2 flex font-medium" onClick={handleClick}>
-        {icon && <div className="mr-2">{icon}</div>}
-        {children}
-      </button>
+    <li className={`ml-4 hover:text-gray-300 ${selectedID === route ? 'text-white' : 'text-gray-400'}`}>
+      <Link href={route}>
+        <a className="w-full text-left py-2 flex font-medium">
+          {icon && <div className="mr-2">{icon}</div>}
+          {children}
+        </a>
+      </Link>
     </li>
   );
 };

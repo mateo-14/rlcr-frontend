@@ -19,6 +19,7 @@ export default function Checkout() {
 
   const handleSubmit = (data) => {
     data.credits = credits;
+    data.route = 'checkout';
     if (user.isReady && user.data) {
       return axios
         .post(`${process.env.NEXT_PUBLIC_API_URL}/orders`, { ...data }, { withCredentials: true })
@@ -28,7 +29,7 @@ export default function Checkout() {
         .catch((err) => {
           if (err.response) {
             if (err.response.status === 401) {
-              const dataB64 = encodeB64Object({ route: 'checkout', ...data });
+              const dataB64 = encodeB64Object(data);
               window.location.assign(`${process.env.NEXT_PUBLIC_DS_OAUTH}&state=${dataB64}`);
             } else if (err.response.status === 400) throw err;
           }
@@ -58,10 +59,10 @@ export default function Checkout() {
 }
 
 const Form = ({ formData, onSubmit }) => {
-  const [dni, setDNI] = useState(formData.dni);
-  const [paymentAccount, setPaymentAccount] = useState(formData.paymentAccount);
-  const [account, setAccount] = useState(formData.account);
-  const [cvuAlias, setCVUAlias] = useState(formData.cvuAlias);
+  const [dni, setDNI] = useState(formData.dni || '');
+  const [paymentAccount, setPaymentAccount] = useState(formData.paymentAccount || '');
+  const [account, setAccount] = useState(formData.account || '');
+  const [cvuAlias, setCVUAlias] = useState(formData.cvuAlias || '');
   const [errors, setErrors] = useState();
   const [isFetching, setIsFetching] = useState(false);
 
@@ -99,6 +100,8 @@ const Form = ({ formData, onSubmit }) => {
             onChange={({ currentTarget }) => setCVUAlias(currentTarget.value)}
             value={cvuAlias}
             errors={errors}
+            minLength={4}
+            maxLength={40}
           />
           <Input
             className="mb-4"
@@ -108,6 +111,8 @@ const Form = ({ formData, onSubmit }) => {
             onChange={({ currentTarget }) => setDNI(currentTarget.value)}
             value={dni}
             errors={errors}
+            minLength={7}
+            maxLength={9}
           />
         </>
       ) : formData.paymentMethodID === 0 || formData.paymentMethodID === 1 ? (
@@ -119,6 +124,8 @@ const Form = ({ formData, onSubmit }) => {
           onChange={({ currentTarget }) => setPaymentAccount(currentTarget.value)}
           value={paymentAccount}
           errors={errors}
+          minLength={4}
+          maxLength={40}
         />
       ) : null}
 
@@ -129,6 +136,8 @@ const Form = ({ formData, onSubmit }) => {
         onChange={({ currentTarget }) => setAccount(currentTarget.value)}
         value={account}
         errors={errors}
+        minLength={3}
+        maxLength={80}
       />
       <p className="text-white mt-6 mb-4">
         * Al confirmar es necesario que autorices nuestra aplicación de Discord para seguir con el proceso de pago. (Es
