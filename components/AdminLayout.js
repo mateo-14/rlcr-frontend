@@ -38,7 +38,7 @@ export default function AdminLayout({ children }) {
 
 const Menu = () => {
   const router = useRouter();
-
+  console.log(router.pathname);
   return (
     <div className="m-6">
       <h2 className="text-lg text-white font-semibold">Menú</h2>
