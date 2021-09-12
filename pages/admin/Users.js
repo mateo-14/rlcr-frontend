@@ -2,6 +2,7 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import TableRowLoading from '../../components/TableRowLoading';
 
 const Users = () => {
   const [users, setUsers] = useState();
@@ -22,15 +23,17 @@ const Users = () => {
         <table className="table-auto divide-y divide-gray-600 w-full">
           <thead>
             <tr>
-              <th className="py-3 px-4 text-left text-sm font-medium text-gray-300 uppercase">User</th>
-              <th className="py-3 text-left text-sm font-medium text-gray-300 uppercase">ID</th>
-              <th className="py-3 text-left text-sm font-medium text-gray-300 uppercase">Pedidos</th>
+              <th className="py-3 px-6 text-left text-sm font-medium text-gray-300 uppercase">User</th>
+              <th className="py-3 px-6 text-left text-sm font-medium text-gray-300 uppercase">ID</th>
+              <th className="py-3 px-6 text-left text-sm font-medium text-gray-300 uppercase">Pedidos</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-600">
+            {!users && <TableRowLoading cols={3} />}
+
             {users?.map((user) => (
               <tr className="text-gray-300" key={user.id}>
-                <td className="px-4 py-2 whitespace-nowrap text-sm font-medium flex items-center">
+                <td className="px-6 py-2 whitespace-nowrap text-sm font-medium flex items-center">
                   <Image
                     className="rounded-full"
                     alt="Foto de perfil"
@@ -40,8 +43,8 @@ const Users = () => {
                   ></Image>
                   <span className="ml-2">{`${user.username}#${user.discriminator}`}</span>
                 </td>
-                <td className="py-2 whitespace-nowrap text-sm font-medium">{user.id}</td>
-                <td className="py-2 whitespace-nowrap text-sm font-medium">
+                <td className="px-6 py-2 whitespace-nowrap text-sm font-medium">{user.id}</td>
+                <td className="px-6 py-2 whitespace-nowrap text-sm font-medium">
                   <Link href={`/admin/orders?user=${user.id}`}>
                     <a className="text-purple-500 hover:text-purple-400">Ver pedidos</a>
                   </Link>

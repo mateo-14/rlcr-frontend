@@ -1,18 +1,28 @@
 import axios from 'axios';
 import { useRouter } from 'next/router';
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import CheckSelect from '../../components/CheckSelect';
+import TableRowLoading from '../../components/TableRowLoading';
 import { SettingsContext } from '../../contexts/SettingsContext';
 import { formatter, STATUS } from '../../util';
+
+const statusQueryToOptions = (status) => [
+  {
+    id: 0,
+    checked: status == 0 || (Array.isArray(status) && status?.some((id) => id == 0)),
+    text: 'Pendiente',
+  },
+  {
+    id: 1,
+    checked: status == 1 || (Array.isArray(status) && status?.some((id) => id == 1)),
+    text: 'Completado',
+  },
+];
 
 const Orders = () => {
   const router = useRouter();
   const settings = useContext(SettingsContext);
-  const firstRender = useRef();
-  const [options, setOptions] = useState([
-    { id: 0, checked: true, text: 'Pendiente' },
-    { id: 1, checked: true, text: 'Completado' },
-  ]);
+  const options = statusQueryToOptions(router.query?.status);
   const [orders, setOrders] = useState();
 
   useEffect(() => {
@@ -28,6 +38,7 @@ const Orders = () => {
           }
         else searchParams.append('status[]', query.status);
       }
+      setOrders(null);
       axios
         .get(`${process.env.NEXT_PUBLIC_API_URL}/orders/all?${searchParams.toString()}`, {
           withCredentials: true,
@@ -40,23 +51,23 @@ const Orders = () => {
     }
   }, [router.isReady, router.query]);
 
-  useEffect(() => {
-    if (!firstRender.current) return (firstRender.current = true);
-    handleSortChange();
-  }, [options]);
-
-  const handleSortChange = () => {
-    const query = { order: router.query.order === 'asc' ? 'desc' : 'asc' };
-    if (options.some((option) => option.checked))
-      query.status = options.filter((option) => option.checked).map((option) => option.id);
-
+  const handleSortChange = (query) => {
+    delete query.params;
     router.push({ pathname: 'orders', query }, '', {
       shallow: true,
     });
   };
 
-  const handleChange = (id, checked) =>
-    setOptions(options.map((option) => (option.id === id ? { ...option, checked } : option)));
+  const handleSortOrderChange = () =>
+    handleSortChange({ ...router.query, order: router.query.order === 'asc' ? 'desc' : 'asc' });
+
+  const handleSortStatusChange = (id, checked) => {
+    const status = options
+      .filter(({ id: _id, checked: _checked }) => (_id == id ? checked : _checked))
+      .map(({ id }) => id);
+    const query = { ...router.query, status };
+    handleSortChange(query);
+  };
 
   return (
     <>
@@ -66,7 +77,7 @@ const Orders = () => {
         <CheckSelect
           placeholder="Filtrar por estado"
           options={options}
-          onChange={handleChange}
+          onChange={handleSortStatusChange}
           className="w-60"
           containerClass="ml-4"
         />
@@ -79,7 +90,7 @@ const Orders = () => {
               <th className="px-6 py-3 text-left text-sm font-medium text-gray-300 uppercase">User ID</th>
               <th
                 className="px-6 py-3 text-left text-sm font-medium text-gray-300 uppercase flex items-center cursor-pointer"
-                onClick={handleSortChange}
+                onClick={handleSortOrderChange}
               >
                 Fecha
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
@@ -106,6 +117,7 @@ const Orders = () => {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-600">
+            {!orders && <TableRowLoading cols={8} />}
             {orders?.map((order) => (
               <tr key={order.id}>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-medium">{order.id}</td>

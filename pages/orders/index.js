@@ -3,6 +3,7 @@ import Head from 'next/head';
 import Link from 'next/link';
 import { useContext, useEffect, useState } from 'react';
 import Layout from '../../components/Layout';
+import TableRowLoading from '../../components/TableRowLoading';
 import Button from '../../components/UI/Button';
 import Loader from '../../components/UI/Loader';
 import { SettingsContext } from '../../contexts/SettingsContext';
@@ -70,6 +71,7 @@ export default function Order() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-700">
+              {isLoading && orders.length === 0 && <TableRowLoading cols={7} />}
               {settings &&
                 orders.map((order) => (
                   <tr key={order.id}>
@@ -103,11 +105,6 @@ export default function Order() {
         </div>
         <div className="flex justify-between items-center flex-wrap">
           <p className="max-w-xl z-100 text-sm leading-7 mt-auto mx-2 md:mx-0 text-white">
-            <span className={`px-2 font-semibold rounded-full bg-purple-500 text-gray-300`}>
-              Esperando confirmación
-            </span>{' '}
-            El pedido debe ser confirmado por un moderador.
-            <br />
             <span className={`px-2 font-semibold rounded-full bg-purple-500 text-gray-300 border-none`}>
               Pago pendiente
             </span>{' '}
