@@ -60,7 +60,7 @@ const Menu = () => {
             </svg>
           }
           route="/admin/users"
-          selectedID={router.route}
+          selectedID={router.pathname}
         >
           Usuarios
         </MenuItem>
@@ -82,7 +82,7 @@ const Menu = () => {
             </svg>
           }
           route="/admin/orders"
-          selectedID={router.route}
+          selectedID={router.pathname}
         >
           Pedidos
         </MenuItem>
@@ -93,7 +93,7 @@ const Menu = () => {
 
 const MenuItem = ({ children, icon, selectedID, route }) => {
   return (
-    <li className={`ml-4 hover:text-gray-300 ${selectedID === route ? 'text-white' : 'text-gray-400'}`}>
+    <li className={`ml-4 hover:text-gray-300 ${selectedID.toLowerCase() === route ? 'text-white' : 'text-gray-400'}`}>
       <Link href={route}>
         <a className="w-full text-left py-2 flex font-medium">
           {icon && <div className="mr-2">{icon}</div>}

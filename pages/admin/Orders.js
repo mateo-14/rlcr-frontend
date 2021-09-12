@@ -53,7 +53,7 @@ export default function Orders() {
 
   const handleSortChange = (query) => {
     delete query.params;
-    router.push({ pathname: router.pathname, query }, router.asPath, {
+    router.push({ pathname: router.pathname, query }, null, {
       shallow: true,
     });
   };
