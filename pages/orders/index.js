@@ -54,7 +54,7 @@ export default function Order() {
       <div className="bg-gray-700 sm:rounded-xl sm:shadow-xl flex-grow flex flex-col p-4">
         <div className="flex align-center items-center">
           <h2 className="text-3xl text-purple-500 font-medium text-center md:text-left">Pedidos</h2>
-          {isLoading && <Loader size={8} className="ml-auto" />}
+          {isLoading && <Loader size="w-8 h-8" className="ml-auto" />}
         </div>
         <div className="overflow-auto rounded-xl bg-gray-800 my-6" style={{ flex: '1 1 1px', minHeight: '400px' }}>
           <table className="table-auto divide-y divide-gray-700 w-full">

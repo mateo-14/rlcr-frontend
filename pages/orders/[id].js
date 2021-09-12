@@ -51,7 +51,7 @@ export default function Order() {
       </Head>
       <section className="my-auto p-10 bg-gray-700 sm:shadow-xl sm:rounded-xl sm:mx-auto sm:max-w-screen-sm">
         {isLoading || !settings ? (
-          <Loader size="16" className="m-auto" />
+          <Loader size="w-16 h-16" className="m-auto" />
         ) : (
           <>
             <h2 className="text-purple-500 text-2xl font-medium">Pedido {order?.id}</h2>
