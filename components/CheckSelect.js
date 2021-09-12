@@ -2,7 +2,6 @@ import { useState } from 'react';
 
 const CheckSelect = ({ placeholder = '', options = [], onChange, containerClass, className }) => {
   const [isShowing, setIsShowing] = useState(false);
-  // const [options, setOptions] = useState(propOptions);
 
   const handleClick = () => setIsShowing(!isShowing);
 

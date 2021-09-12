@@ -160,7 +160,7 @@ const HeaderUser = () => {
       Iniciar sesión
     </button>
   ) : (
-    <Loader size={8} />
+    <Loader />
   );
 };
 

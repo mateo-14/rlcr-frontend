@@ -26,7 +26,7 @@ const SellInfo = () => {
   return (
     <div className="ml-auto text-white font-semibold relative flex flex-row items-center">
       {!settings ? (
-        <Loader size={8} />
+        <Loader />
       ) : (
         // <span className={`${styles.info} ${isAnimating ? styles.animated : ''}`} onAnimationEnd={handleAnimationEnd}>
         <>

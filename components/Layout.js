@@ -18,13 +18,8 @@ export default function Layout({ children, className = '' }) {
               <Image src={Logo} alt="rlgo.store logo" height={51} width={121}></Image>
             </a>
           </Link>
-          {/*        <Link href="/orders">
-            <a className="text-purple-500 font-semibold text-md">Pedidos</a>
-          </Link> */}
         </nav>
-
-        {/* <SellInfo /> */}
-        {isReady ? <HeaderUser /> : <Loader size={8} />}
+        {isReady ? <HeaderUser /> : <Loader />}
       </header>
       <main role="main" className={`container flex-grow flex flex-col mx-auto my-12 xl:my-8 ${className}`}>
         {children}
