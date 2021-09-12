@@ -60,7 +60,7 @@ const Menu = () => {
             </svg>
           }
           route="/admin/users"
-          selectedID={router.asPath}
+          selectedID={router.route}
         >
           Usuarios
         </MenuItem>
@@ -82,7 +82,7 @@ const Menu = () => {
             </svg>
           }
           route="/admin/orders"
-          selectedID={router.asPath}
+          selectedID={router.route}
         >
           Pedidos
         </MenuItem>

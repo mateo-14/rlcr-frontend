@@ -25,7 +25,6 @@ export default function Orders() {
   const settings = useContext(SettingsContext);
   const options = statusQueryToOptions(router.query?.status);
   const [orders, setOrders] = useState();
-
   useEffect(() => {
     if (router.isReady) {
       const query = { ...router.query };
@@ -54,7 +53,7 @@ export default function Orders() {
 
   const handleSortChange = (query) => {
     delete query.params;
-    router.push({ pathname: 'orders', query }, null, {
+    router.push({ pathname: router.pathname, query }, router.asPath, {
       shallow: true,
     });
   };
