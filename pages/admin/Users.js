@@ -41,7 +41,9 @@ const Users = () => {
                     height="36"
                     width="36"
                   ></Image>
-                  <span className="ml-2">{`${user.username}#${user.discriminator}`}</span>
+                  <span className="ml-2" title={user.isAdmin ? 'Es admin 😎' : ''}>{`${user.username}#${
+                    user.discriminator
+                  }${user.isAdmin ? ' 😎' : ''}`}</span>
                 </td>
                 <td className="px-6 py-2 whitespace-nowrap text-sm font-medium">{user.id}</td>
                 <td className="px-6 py-2 whitespace-nowrap text-sm font-medium">

@@ -93,7 +93,7 @@ const Form = ({ formData, onSubmit }) => {
         <>
           <Input
             className="mb-4"
-            label="CVU/CBU/Alias"
+            label="Tu CVU/CBU/Alias"
             id="cvuAlias"
             required
             onChange={({ currentTarget }) => setCVUAlias(currentTarget.value)}
@@ -102,7 +102,7 @@ const Form = ({ formData, onSubmit }) => {
           />
           <Input
             className="mb-4"
-            label="DNI"
+            label="Tu DNI"
             id="dni"
             required
             onChange={({ currentTarget }) => setDNI(currentTarget.value)}
@@ -123,7 +123,7 @@ const Form = ({ formData, onSubmit }) => {
       ) : null}
 
       <Input
-        label="Link al perfil de Steam o usuario de Epic Games"
+        label="Link de tu perfil de Steam o usuario de Epic Games"
         id="account"
         required
         onChange={({ currentTarget }) => setAccount(currentTarget.value)}

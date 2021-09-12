@@ -21,7 +21,7 @@ export default function Layout({ children, className = '' }) {
         </nav>
         {isReady ? <HeaderUser /> : <Loader />}
       </header>
-      <main role="main" className={`container flex-grow flex flex-col mx-auto my-12 xl:my-8 ${className}`}>
+      <main role="main" className={`container flex-grow flex flex-col mx-auto my-12 xl:my-8 md:px-4 ${className}`}>
         {children}
       </main>
       <footer className="py-2">

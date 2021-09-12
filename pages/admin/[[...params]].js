@@ -11,10 +11,10 @@ export default function Admin() {
   const route = router.query.params?.[0];
 
   useEffect(() => {
-    if (user.isReady && !user.data.isAdmin) {
+    if (user.isReady && !user.data?.isAdmin) {
       router.push('/');
     }
-  }, [user?.data?.isAdmin]);
+  }, [user.isReady]);
 
   return (
     <div className="flex min-h-screen">
@@ -22,7 +22,7 @@ export default function Admin() {
         <>
           <div className="w-60 bg-gray-700">
             <h1 className="text-3xl text-white m-4">Admin</h1>
-            <Menu />
+            {/* <Menu /> */}
           </div>
           <main role="main" className="flex-grow flex flex-col bg-gray-800">
             <header className="my-4">
