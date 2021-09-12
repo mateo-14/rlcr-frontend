@@ -52,7 +52,7 @@ const Orders = () => {
 
   const handleSortChange = (query) => {
     delete query.params;
-    router.push({ pathname: router.pathname, query }, null, {
+    router.push({ pathname: '/admin/orders', query }, null, {
       shallow: true,
     });
   };
