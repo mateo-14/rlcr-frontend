@@ -26,10 +26,12 @@ export default function Admin() {
           </div>
           <main role="main" className="flex-grow flex flex-col bg-gray-800">
             <header className="my-4">
-              <div className="max-w-max ml-auto mr-8">{/* <HeaderUser /> */}</div>
+              <div className="max-w-max ml-auto mr-8">
+                <HeaderUser />
+              </div>
             </header>
             <div className="mx-10 mb-8 flex flex-col flex-1">
-              {route === 'users' ? <Users /> : route === 'orders' ? <Orders /> : null}
+              {/* {route === 'users' ? <Users /> : route === 'orders' ? <Orders /> : null} */}
             </div>
           </main>
         </>
