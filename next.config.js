@@ -3,4 +3,7 @@ module.exports = {
   images: {
     domains: ['cdn.discordapp.com'],
   },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
 };
