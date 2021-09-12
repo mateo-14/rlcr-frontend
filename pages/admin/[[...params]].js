@@ -22,13 +22,11 @@ export default function Admin() {
         <>
           <div className="w-60 bg-gray-700">
             <h1 className="text-3xl text-white m-4">Admin</h1>
-            {/* <Menu /> */}
+            <Menu />
           </div>
           <main role="main" className="flex-grow flex flex-col bg-gray-800">
             <header className="my-4">
-              <div className="max-w-max ml-auto mr-8">
-                <HeaderUser />
-              </div>
+              <div className="max-w-max ml-auto mr-8">{/* <HeaderUser /> */}</div>
             </header>
             <div className="mx-10 mb-8 flex flex-col flex-1">
               {route === 'users' ? <Users /> : route === 'orders' ? <Orders /> : null}
