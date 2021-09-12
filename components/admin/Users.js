@@ -3,9 +3,8 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import TableRowLoading from '../../components/TableRowLoading';
-import AdminLayout from '../../components/AdminLayout';
 
-export default function Users() {
+const Users = () => {
   const [users, setUsers] = useState();
 
   useEffect(() => {
@@ -18,7 +17,7 @@ export default function Users() {
       });
   }, []);
   return (
-    <AdminLayout>
+    <>
       <h2 className="text-2xl text-white">Users</h2>
       <div className="overflow-auto rounded-xl bg-gray-700 mt-6" style={{ flex: '1 1 1px', minHeight: '400px' }}>
         <table className="table-auto divide-y divide-gray-600 w-full">
@@ -57,6 +56,8 @@ export default function Users() {
           </tbody>
         </table>
       </div>
-    </AdminLayout>
+    </>
   );
-}
+};
+
+export default Users;

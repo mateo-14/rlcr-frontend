@@ -1,7 +1,6 @@
 import axios from 'axios';
 import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from 'react';
-import AdminLayout from '../../components/AdminLayout';
 import CheckSelect from '../../components/CheckSelect';
 import TableRowLoading from '../../components/TableRowLoading';
 import { SettingsContext } from '../../contexts/SettingsContext';
@@ -20,7 +19,7 @@ const statusQueryToOptions = (status) => [
   },
 ];
 
-export default function Orders() {
+const Orders = () => {
   const router = useRouter();
   const settings = useContext(SettingsContext);
   const options = statusQueryToOptions(router.query?.status);
@@ -70,7 +69,7 @@ export default function Orders() {
   };
 
   return (
-    <AdminLayout>
+    <>
       <h2 className="text-2xl text-white">Pedidos</h2>
       <div className="text-white flex items-center mt-2 mb-5">
         Filtrar por estado:
@@ -145,6 +144,8 @@ export default function Orders() {
           </tbody>
         </table>
       </div>
-    </AdminLayout>
+    </>
   );
-}
+};
+
+export default Orders;

@@ -1,10 +1,12 @@
 import { useRouter } from 'next/router';
 import { useContext, useEffect } from 'react';
-import HeaderUser from '../components/HeaderUser';
-import { UserContext } from '../contexts/UserContext';
+import HeaderUser from '../../components/HeaderUser';
+import { UserContext } from '../../contexts/UserContext';
 import Link from 'next/link';
+import Orders from '../../components/admin/Orders';
+import Users from '../../components/admin/Users';
 
-export default function AdminLayout({ children }) {
+export default function Admin() {
   const user = useContext(UserContext);
   const router = useRouter();
 
@@ -28,7 +30,13 @@ export default function AdminLayout({ children }) {
                 <HeaderUser />
               </div>
             </header>
-            <div className="mx-10 mb-8 flex flex-col flex-1">{children}</div>
+            <div className="mx-10 mb-8 flex flex-col flex-1">
+              {router.query.params?.[0] === 'users' ? (
+                <Users />
+              ) : router.query.params?.[0] === 'orders' ? (
+                <Orders />
+              ) : null}
+            </div>
           </main>
         </>
       ) : null}
@@ -38,6 +46,7 @@ export default function AdminLayout({ children }) {
 
 const Menu = () => {
   const router = useRouter();
+  const route = router.query.params?.[0];
   return (
     <div className="m-6">
       <h2 className="text-lg text-white font-semibold">Menú</h2>
@@ -59,8 +68,8 @@ const Menu = () => {
               />
             </svg>
           }
-          route="/admin/users"
-          selectedID={router.pathname}
+          route="users"
+          selectedID={route}
         >
           Usuarios
         </MenuItem>
@@ -81,8 +90,8 @@ const Menu = () => {
               />
             </svg>
           }
-          route="/admin/orders"
-          selectedID={router.pathname}
+          route="orders"
+          selectedID={route}
         >
           Pedidos
         </MenuItem>
@@ -94,7 +103,7 @@ const Menu = () => {
 const MenuItem = ({ children, icon, selectedID, route }) => {
   return (
     <li className={`ml-4 hover:text-gray-300 ${selectedID.toLowerCase() === route ? 'text-white' : 'text-gray-400'}`}>
-      <Link href={route}>
+      <Link href={route} shallow={true}>
         <a className="w-full text-left py-2 flex font-medium">
           {icon && <div className="mr-2">{icon}</div>}
           {children}
