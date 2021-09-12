@@ -40,7 +40,7 @@ const DsRedirect = () => {
         {!router.query.error ? (
           <>
             <h2 className="text-white text-3xl">Iniciando sesión...</h2>
-            <Loader size="w-10 h-10" className="mt-4" />
+            <Loader size="w-12 h-12" className="mt-4" />
           </>
         ) : (
           <>
