@@ -38,7 +38,6 @@ export default function AdminLayout({ children }) {
 
 const Menu = () => {
   const router = useRouter();
-  console.log(router.pathname);
   return (
     <div className="m-6">
       <h2 className="text-lg text-white font-semibold">Menú</h2>
@@ -61,7 +60,7 @@ const Menu = () => {
             </svg>
           }
           route="/admin/users"
-          selectedID={router.pathname}
+          selectedID={router.asPath}
         >
           Usuarios
         </MenuItem>
@@ -83,7 +82,7 @@ const Menu = () => {
             </svg>
           }
           route="/admin/orders"
-          selectedID={router.pathname}
+          selectedID={router.asPath}
         >
           Pedidos
         </MenuItem>
