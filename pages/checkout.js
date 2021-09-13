@@ -8,6 +8,8 @@ import Loader from '../components/UI/Loader';
 import { SettingsContext } from '../contexts/SettingsContext';
 import { UserContext } from '../contexts/UserContext';
 import { decodeB64Object, encodeB64Object } from '../util';
+import Link from 'next/link';
+import LinkButton from '../components/UI/LinkButton';
 
 export default function Checkout() {
   const settings = useContext(SettingsContext);
@@ -16,6 +18,7 @@ export default function Checkout() {
   const formData = useMemo(() => (router.query.c ? decodeB64Object(router.query.c) : null), [router.query.c]);
   const max = formData?.mode == 0 ? settings?.maxBuy : settings?.maxSell;
   const credits = Math.max(100, Math.min(Math.round((formData?.credits || 100) / 10) * 10, max));
+  const [order, setOrder] = useState();
 
   const handleSubmit = (data) => {
     data.credits = credits;
@@ -23,9 +26,7 @@ export default function Checkout() {
     if (user.isReady && user.data) {
       return axios
         .post(`${process.env.NEXT_PUBLIC_API_URL}/orders`, { ...data }, { withCredentials: true })
-        .then(({ data }) => {
-          router.push(`/orders/${data.id}?state=${encodeB64Object(data)}`);
-        })
+        .then(({ data }) => setOrder(data))
         .catch((err) => {
           if (err.response) {
             if (err.response.status === 401) {
@@ -43,16 +44,32 @@ export default function Checkout() {
   return (
     <Layout>
       <section className="my-auto bg-gray-700 sm:rounded-xl sm:shadow-xl px-6 py-10">
-        {settings && formData && (
-          <>
-            <p className="text-4xl text-white mb-10">{`Vas a ${
-              formData.mode === 0 ? 'comprar' : 'vender'
-            } ${credits} créditos a ARS$${
-              (formData.mode === 0 ? settings.creditBuyValue : settings.creditSellValue) * credits
-            } por ${settings.paymentMethods[formData.paymentMethodID]?.name}`}</p>
-            <Form formData={formData} onSubmit={handleSubmit} />
-          </>
-        )}
+        {settings &&
+          formData &&
+          user.isReady &&
+          (order ? (
+            <>
+              <h1 className="text-4xl text-white mb-4">Pedido realizado!</h1>
+              <p className="text-3xl text-white">
+                Te enviamos un DM a tu Discord <span className="text-purple-500">({user.data.username})</span> con
+                información del pedido.
+                <br />
+                En breve nos contactaremos por DM para realizar la transacción.
+              </p>
+              <Link href={`/orders/${order.id}?state=${encodeB64Object(order)}`} passHref>
+                <LinkButton>Ver pedido</LinkButton>
+              </Link>
+            </>
+          ) : (
+            <>
+              <p className="text-4xl text-white mb-10">{`Vas a ${
+                formData.mode === 0 ? 'comprar' : 'vender'
+              } ${credits} créditos a ARS$${
+                (formData.mode === 0 ? settings.creditBuyValue : settings.creditSellValue) * credits
+              } por ${settings.paymentMethods[formData.paymentMethodID]?.name}`}</p>
+              <Form formData={formData} onSubmit={handleSubmit} />
+            </>
+          ))}
       </section>
     </Layout>
   );

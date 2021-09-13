@@ -7,6 +7,7 @@ import { SettingsContext } from '../../contexts/SettingsContext';
 import { decodeB64Object, encodeB64Object, formatter, STATUS } from '../../util';
 import Link from 'next/dist/client/link';
 import axios from 'axios';
+import LinkButton from '../../components/UI/LinkButton';
 
 export default function Order() {
   const router = useRouter();
@@ -55,7 +56,7 @@ export default function Order() {
         ) : (
           <>
             <h2 className="text-purple-500 text-2xl font-medium">Pedido {order?.id}</h2>
-            <p className="text-white text-lg mt-6">
+            <p className="text-white text-lg mt-6 break-words	">
               <span className="font-medium">Créditos:</span> {order.credits}
               <br />
               <span className="font-medium">Precio:</span> {formatter.format(order.price)}
@@ -96,10 +97,8 @@ export default function Order() {
               </span>
               <br />
             </p>
-            <Link href="/orders">
-              <a className="bg-purple-500 text-white px-4 py-2 font-medium mt-6 rounded-xl uppercase w-full block text-center">
-                Ver todos los pedidos
-              </a>
+            <Link href="/orders" passHref>
+              <LinkButton>Ver todos los pedidos</LinkButton>
             </Link>
           </>
         )}
