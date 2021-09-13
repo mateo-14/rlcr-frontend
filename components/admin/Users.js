@@ -47,7 +47,7 @@ const Users = () => {
                 </td>
                 <td className="px-6 py-2 whitespace-nowrap text-sm font-medium">{user.id}</td>
                 <td className="px-6 py-2 whitespace-nowrap text-sm font-medium">
-                  <Link href={`/admin/orders?user=${user.id}`}>
+                  <Link href={`/admin/orders?userID=${user.id}`}>
                     <a className="text-purple-500 hover:text-purple-400">Ver pedidos</a>
                   </Link>
                 </td>
