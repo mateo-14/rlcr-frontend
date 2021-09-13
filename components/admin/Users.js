@@ -8,13 +8,17 @@ const Users = () => {
   const [users, setUsers] = useState();
 
   useEffect(() => {
+    const token = axios.CancelToken.source();
     axios
-      .get(`${process.env.NEXT_PUBLIC_API_URL}/users/all`, { withCredentials: true })
+      .get(`${process.env.NEXT_PUBLIC_API_URL}/users/all`, { withCredentials: true, cancelToken: token.token })
       .then(({ data }) => setUsers(data))
       .catch((err) => {
-        alert('Hubo un error, decile al programadorcito de cuarta que mire la consola y el Log de Heroku');
-        console.error(err);
+        if (!axios.isCancel(err)) {
+          alert('Hubo un error, decile al programadorcito de cuarta que mire la consola y el Log de Heroku');
+          console.error(err);
+        }
       });
+    return () => token?.cancel();
   }, []);
   return (
     <>

@@ -21,35 +21,46 @@ const statusQueryToOptions = (status) => [
   },
 ];
 
+const queryToSearchParams = (query) => {
+  query = { ...query };
+  delete query.params;
+  const searchParams = new URLSearchParams(query);
+  if (query.status) {
+    searchParams.delete('status');
+    if (Array.isArray(query.status))
+      for (const status of query.status) {
+        searchParams.append('status[]', status);
+      }
+    else searchParams.append('status[]', query.status);
+  }
+  return searchParams;
+};
+
 const Orders = () => {
   const router = useRouter();
   const options = statusQueryToOptions(router.query?.status);
   const [orders, setOrders] = useState();
 
   useEffect(() => {
+    let token;
     if (router.isReady) {
-      const query = { ...router.query };
-      delete query.params;
-      const searchParams = new URLSearchParams(query);
-      if (query.status) {
-        searchParams.delete('status');
-        if (Array.isArray(query.status))
-          for (const status of query.status) {
-            searchParams.append('status[]', status);
-          }
-        else searchParams.append('status[]', query.status);
-      }
+      const searchParams = queryToSearchParams(router.query);
       setOrders(null);
+      token = axios.CancelToken.source();
       axios
         .get(`${process.env.NEXT_PUBLIC_API_URL}/orders/all?${searchParams.toString()}`, {
           withCredentials: true,
+          cancelToken: token.token,
         })
         .then(({ data }) => setOrders(data))
         .catch((err) => {
-          alert('Hubo un error, decile al programadorcito de cuarta que mire la consola y el Log de Heroku');
-          console.error(err);
+          if (!axios.isCancel(err)) {
+            alert('Hubo un error, decile al programadorcito de cuarta que mire la consola y el Log de Heroku');
+            console.error(err);
+          }
         });
     }
+    return () => token?.cancel();
   }, [router.isReady, router.query]);
 
   const handleSortChange = (query) => {
@@ -134,7 +145,6 @@ const OrdersList = ({ orders }) => {
   const [shownUser, setShownUser] = useState();
 
   const handleMouseEnter = (order) => {
-    if (token.current) token.current.cancel();
     if (timeout.current) clearTimeout(timeout.current);
 
     timeout.current = setTimeout(() => {
@@ -156,14 +166,20 @@ const OrdersList = ({ orders }) => {
     }, 200);
   };
 
+  const cancel = () => {
+    token.current?.cancel();
+    token.current = null;
+    clearInterval(timeout.current);
+    timeout.current = null;
+  };
+
   const handleMouseLeave = () => {
-    if (token.current) {
-      token.current.cancel();
-      token.current = null;
-    }
-    if (timeout.current) clearInterval(timeout.current);
+    cancel();
     setShownUser(null);
   };
+
+  useEffect(() => () => cancel(), []);
+
   return (
     <>
       {orders?.map((order) => (
