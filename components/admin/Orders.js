@@ -141,11 +141,15 @@ const Orders = () => {
 const OrdersList = ({ orders }) => {
   const token = useRef();
   const timeout = useRef();
+  const cachedUsers = useRef(new Map());
   const settings = useContext(SettingsContext);
   const [shownUser, setShownUser] = useState();
 
   const handleMouseEnter = (order) => {
-    if (timeout.current) clearTimeout(timeout.current);
+    if (cachedUsers.current.has(order.userID)) {
+      setShownUser({ ...cachedUsers.current.get(order.userID), orderID: order.id });
+      return;
+    }
 
     timeout.current = setTimeout(() => {
       token.current = axios.CancelToken.source();
@@ -155,7 +159,9 @@ const OrdersList = ({ orders }) => {
           cancelToken: token.current.token,
         })
         .then(({ data }) => {
-          setShownUser({ ...data, orderID: order.id, id: order.userID });
+          const _shownUser = { ...data, id: order.userID };
+          cachedUsers.current.set(order.userID, _shownUser);
+          setShownUser({ ..._shownUser, orderID: order.id });
         })
         .catch((err) => {
           if (!axios.isCancel(err)) {
