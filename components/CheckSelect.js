@@ -1,14 +1,24 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const CheckSelect = ({ placeholder = '', options = [], onChange, containerClass, className }) => {
+  const ref = useRef();
   const [isShowing, setIsShowing] = useState(false);
 
-  const handleClick = () => setIsShowing(!isShowing);
+  useEffect(() => {
+    const handleMouseDown = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) {
+        setIsShowing(false);
+      }
+    };
+    document.addEventListener('mousedown', handleMouseDown);
+    return () => document.removeEventListener('mousedown', handleMouseDown);
+  }, [ref]);
 
+  const handleClick = () => setIsShowing(!isShowing);
   const handleChecked = (option) => typeof onChange === 'function' && onChange(option.id, !option.checked);
 
   return (
-    <div className={`relative ${containerClass || ''}`}>
+    <div className={`relative ${containerClass || ''}`} ref={ref}>
       <button
         className={`rounded-xl bg-gray-600 flex justify-between items-center ${
           isShowing ? 'text-white' : options.some((option) => option.checked) ? 'text-gray-300' : 'text-gray-300'

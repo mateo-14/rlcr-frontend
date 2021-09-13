@@ -1,9 +1,9 @@
 import { useRouter } from 'next/router';
 import { useContext, useEffect } from 'react';
 import Layout from '../components/Layout';
-import { UserContext } from '../contexts/UserContext';
-import Loader from '../components/UI/Loader';
 import Button from '../components/UI/Button';
+import Loader from '../components/UI/Loader';
+import { UserContext } from '../contexts/UserContext';
 import { decodeB64Object } from '../util';
 
 const DsRedirect = () => {
