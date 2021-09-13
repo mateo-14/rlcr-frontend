@@ -6,7 +6,7 @@ import { useContext, useEffect, useRef, useState } from 'react';
 import CheckSelect from '../../components/CheckSelect';
 import TableRowLoading from '../../components/TableRowLoading';
 import { SettingsContext } from '../../contexts/SettingsContext';
-import { formatter, STATUS } from '../../util';
+import { formatter, STATUS } from '../../app/util';
 
 const statusQueryToOptions = (status) => [
   {

@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { useContext } from 'react';
 import Loader from '../components/UI/Loader';
 import { UserContext } from '../contexts/UserContext';
-import Logo from '../public/logo.png';
+import Logo from '../../public/logo.png';
 import HeaderUser from './HeaderUser';
 
 export default function Layout({ children, className = '' }) {
