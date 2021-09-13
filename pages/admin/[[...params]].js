@@ -102,7 +102,7 @@ const Menu = () => {
 
 const MenuItem = ({ children, icon, selectedID, route }) => {
   return (
-    <li className={`ml-4 hover:text-gray-300 ${selectedID.toLowerCase() === route ? 'text-white' : 'text-gray-400'}`}>
+    <li className={`ml-4 hover:text-gray-300 ${selectedID === route ? 'text-white' : 'text-gray-400'}`}>
       <Link href={route} shallow={true}>
         <a className="w-full text-left py-2 flex font-medium">
           {icon && <div className="mr-2">{icon}</div>}
