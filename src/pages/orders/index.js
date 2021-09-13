@@ -1,39 +1,28 @@
-import axios from 'axios';
 import Head from 'next/head';
 import Link from 'next/link';
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Layout from '../../components/Layout';
 import TableRowLoading from '../../components/TableRowLoading';
 import Button from '../../components/UI/Button';
 import Loader from '../../components/UI/Loader';
-import { SettingsContext } from '../../contexts/SettingsContext';
+import useSettings from '../../hooks/useSettings';
 import { encodeB64Object, formatter, STATUS } from '../../util';
+import { getAll as getAllOrders } from '../../services/OrdersService';
 
 export default function Order() {
   const [orders, setOrders] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isLast, setIsLast] = useState(false);
-  const settings = useContext(SettingsContext);
+  const settings = useSettings();
 
-  const fetchOrders = (startAfter) => {
+  const fetchOrders = async (startAfter) => {
     setIsLoading(true);
-
-    axios
-      .get(`${process.env.NEXT_PUBLIC_API_URL}/orders${startAfter ? `?startAfter=${startAfter}` : ''}`, {
-        withCredentials: true,
-      })
-      .then(({ data }) => {
-        if (data && data.length > 0) {
-          setOrders([...orders, ...data]);
-        }
-        if (data.length < 10) {
-          setIsLast(true);
-        }
-        setIsLoading(false);
-      })
-      .catch(() => {
-        setIsLoading(false);
-      });
+    try {
+      const fetchedOrders = await getAllOrders(startAfter);
+      if (fetchedOrders && fetchedOrders.length > 0) setOrders([...orders, ...fetchedOrders]);
+      if (fetchedOrders.length < 10) setIsLast(true);
+    } catch {}
+    setIsLoading(false);
   };
 
   useEffect(() => {

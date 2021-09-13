@@ -2,11 +2,13 @@ import axios from 'axios';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { formatter, STATUS } from '../../util';
 import CheckSelect from '../../components/CheckSelect';
 import TableRowLoading from '../../components/TableRowLoading';
-import { SettingsContext } from '../../contexts/SettingsContext';
-import { formatter, STATUS } from '../../app/util';
+import useSettings from '../../hooks/useSettings';
+import { getAllAdmin as getAllOrdersAdmin } from '../../services/OrdersService';
+import { get as getUser } from '../../services/UsersService';
 
 const statusQueryToOptions = (status) => [
   {
@@ -47,12 +49,8 @@ const Orders = () => {
       const searchParams = queryToSearchParams(router.query);
       setOrders(null);
       token = axios.CancelToken.source();
-      axios
-        .get(`${process.env.NEXT_PUBLIC_API_URL}/orders/all?${searchParams.toString()}`, {
-          withCredentials: true,
-          cancelToken: token.token,
-        })
-        .then(({ data }) => setOrders(data))
+      getAllOrdersAdmin(searchParams.toString(), token.token)
+        .then((data) => setOrders(data))
         .catch((err) => {
           if (!axios.isCancel(err)) {
             alert('Hubo un error, decile al programadorcito de cuarta que mire la consola y el Log de Heroku');
@@ -142,7 +140,7 @@ const OrdersList = ({ orders }) => {
   const token = useRef();
   const timeout = useRef();
   const cachedUsers = useRef(new Map());
-  const settings = useContext(SettingsContext);
+  const settings = useSettings();
   const [shownUser, setShownUser] = useState();
 
   const handleMouseEnter = (order) => {
@@ -153,12 +151,8 @@ const OrdersList = ({ orders }) => {
 
     timeout.current = setTimeout(() => {
       token.current = axios.CancelToken.source();
-      axios
-        .get(`${process.env.NEXT_PUBLIC_API_URL}/users/${order.userID}`, {
-          withCredentials: true,
-          cancelToken: token.current.token,
-        })
-        .then(({ data }) => {
+      getUser(order.userID, token.current.token)
+        .then((data) => {
           const _shownUser = { ...data, id: order.userID };
           cachedUsers.current.set(order.userID, _shownUser);
           setShownUser({ ..._shownUser, orderID: order.id });
@@ -248,4 +242,5 @@ const OrderRow = ({ settings, order, onMouseEnter, onMouseLeave, shownUser }) =>
     </tr>
   );
 };
+
 export default Orders;

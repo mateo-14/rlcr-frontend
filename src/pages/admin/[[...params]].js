@@ -1,19 +1,17 @@
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useContext, useEffect } from 'react';
+import { useEffect } from 'react';
 import Orders from '../../components/admin/Orders';
 import Users from '../../components/admin/Users';
 import HeaderUser from '../../components/HeaderUser';
-import { UserContext } from '../../contexts/UserContext';
+import useUser from '../../hooks/useUser';
 
 export default function Admin() {
-  const user = useContext(UserContext);
+  const user = useUser();
   const router = useRouter();
 
   useEffect(() => {
-    if (user.isReady && !user.data?.isAdmin) {
-      router.push('/');
-    }
+    if (user.isReady && !user.data?.isAdmin) router.push('/');
   }, [user.isReady]);
 
   return (
@@ -44,7 +42,7 @@ export default function Admin() {
   );
 }
 
-const Menu = () => {
+function Menu() {
   const router = useRouter();
   const route = router.query.params?.[0];
   return (
@@ -121,17 +119,15 @@ const Menu = () => {
       </ul>
     </div>
   );
-};
+}
 
-const MenuItem = ({ children, icon, selectedID, route }) => {
-  return (
-    <li className={`ml-4 hover:text-gray-300 ${selectedID === route ? 'text-white' : 'text-gray-400'}`}>
-      <Link href={route} shallow={true}>
-        <a className="w-full text-left py-2 flex font-medium">
-          {icon && <div className="mr-2">{icon}</div>}
-          {children}
-        </a>
-      </Link>
-    </li>
-  );
-};
+const MenuItem = ({ children, icon, selectedID, route }) => (
+  <li className={`ml-4 hover:text-gray-300 ${selectedID === route ? 'text-white' : 'text-gray-400'}`}>
+    <Link href={route} shallow={true}>
+      <a className="w-full text-left py-2 flex font-medium">
+        {icon && <div className="mr-2">{icon}</div>}
+        {children}
+      </a>
+    </Link>
+  </li>
+);

@@ -1,9 +1,9 @@
 import { useRouter } from 'next/router';
-import { useContext, useEffect } from 'react';
-import { UserContext } from '../contexts/UserContext';
+import { useEffect } from 'react';
+import useUser from '../hooks/useUser';
 
 export default function Logout() {
-  const { logout, isReady, data } = useContext(UserContext);
+  const { logout, isReady, data } = useUser();
   const router = useRouter();
 
   useEffect(() => {

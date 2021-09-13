@@ -2,9 +2,10 @@ import axios from 'axios';
 import { createContext, useEffect, useState } from 'react';
 import useSWR from 'swr';
 import * as _ from 'lodash';
-const SettingsContext = createContext();
 
-const SettingsProvider = ({ children }) => {
+export const SettingsContext = createContext();
+
+export function SettingsProvider({ children }) {
   const [settings, setSettings] = useState(null);
   const { data } = useSWR(`${process.env.NEXT_PUBLIC_API_URL}/settings`, axios, {
     revalidateOnFocus: false,
@@ -18,6 +19,4 @@ const SettingsProvider = ({ children }) => {
   }, [settings, data?.data]);
 
   return <SettingsContext.Provider value={settings}>{children}</SettingsContext.Provider>;
-};
-
-export { SettingsProvider, SettingsContext };
+}

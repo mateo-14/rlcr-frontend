@@ -1,28 +1,8 @@
-import { useContext } from 'react';
-import { SettingsContext } from '../contexts/SettingsContext';
+import useSettings from '../hooks/useSettings';
 import { Loader } from './UIComponents';
 
-const SellInfo = () => {
-  const settings = useContext(SettingsContext);
-  /*   const [isAnimating, setIsAnimating] = useState(true);
-  const valuesAreLoaded = useRef();
-
-  useEffect(() => {
-    console.log('hola');
-    if (!valuesAreLoaded.current && settings?.creditBuyValue && settings?.creditSellValue) {
-      valuesAreLoaded.current = {
-        creditBuyValue: settings.creditBuyValue,
-        creditSellValue: settings.creditSellValue,
-      };
-    } else if (valuesAreLoaded.current && !isAnimating) {
-      setIsAnimating(true);
-    }
-  }, [settings?.creditBuyValue, settings?.creditSellValue]);
-
-  const handleAnimationEnd = () => {
-    setIsAnimating(false);
-  };
- */
+export default function SellInfo() {
+  const settings = useSettings();
   return (
     <div className="ml-auto text-white font-semibold relative flex flex-row items-center">
       {!settings ? (
@@ -42,6 +22,4 @@ const SellInfo = () => {
       )}
     </div>
   );
-};
-
-export default SellInfo;
+}

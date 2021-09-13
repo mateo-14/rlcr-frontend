@@ -3,15 +3,15 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import TableRowLoading from '../../components/TableRowLoading';
+import { getAllAdmin as getAllUsersAdmin } from '../../services/UsersService';
 
 const Users = () => {
   const [users, setUsers] = useState();
 
   useEffect(() => {
     const token = axios.CancelToken.source();
-    axios
-      .get(`${process.env.NEXT_PUBLIC_API_URL}/users/all`, { withCredentials: true, cancelToken: token.token })
-      .then(({ data }) => setUsers(data))
+    getAllUsersAdmin(token.token)
+      .then((data) => setUsers(data))
       .catch((err) => {
         if (!axios.isCancel(err)) {
           alert('Hubo un error, decile al programadorcito de cuarta que mire la consola y el Log de Heroku');

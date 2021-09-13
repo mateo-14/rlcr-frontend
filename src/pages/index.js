@@ -1,11 +1,12 @@
 import { useRouter } from 'next/router';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Layout from '../components/Layout';
 import Button from '../components/UI/Button';
 import Input from '../components/UI/Input';
-import { SettingsContext } from '../contexts/SettingsContext';
+import useSettings from '../hooks/useSettings';
+import { encodeB64Object } from '../util';
 
-const useMode = (settings) => {
+export function useMode(settings) {
   const [mode, setMode] = useState(!settings || settings?.buyEnabled ? 0 : 1);
 
   useEffect(() => {
@@ -18,9 +19,8 @@ const useMode = (settings) => {
   }, [settings?.sellEnabled, settings?.buyEnabled]);
 
   return { mode, changeMode: setMode };
-};
+}
 
-// Components
 export default function Home() {
   return (
     <Layout>
@@ -42,8 +42,8 @@ export default function Home() {
   );
 }
 
-const Form = () => {
-  const settings = useContext(SettingsContext);
+function Form() {
+  const settings = useSettings();
   const router = useRouter();
   const { mode, changeMode } = useMode(settings);
   const [credits, setCredits] = useState(100);
@@ -61,8 +61,10 @@ const Form = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const dataB64 = Buffer.from(JSON.stringify({ mode, credits, paymentMethodID: parseInt(pm) })).toString('base64');
-    router.push({ pathname: '/checkout', query: { c: dataB64 } });
+    router.push({
+      pathname: '/checkout',
+      query: { c: encodeB64Object({ mode, credits, paymentMethodID: parseInt(pm) }) },
+    });
   };
 
   const handleSelectChange = ({ currentTarget }) => {
@@ -151,21 +153,19 @@ const Form = () => {
       )}
     </div>
   );
-};
+}
 
-const TabButton = ({ children, selected, disabled, onClick, rounded }) => {
-  return (
-    <button
-      className={`flex-1 font-medium ${rounded} text-black text-sm uppercase disabled:opacity-50 ${
-        selected ? 'bg-purple-500 text-white' : 'bg-gray-600 text-gray-300'
-      }`}
-      onClick={onClick}
-      disabled={disabled}
-    >
-      {children}
-    </button>
-  );
-};
+const TabButton = ({ children, selected, disabled, onClick, rounded }) => (
+  <button
+    className={`flex-1 font-medium ${rounded} text-black text-sm uppercase disabled:opacity-50 ${
+      selected ? 'bg-purple-500 text-white' : 'bg-gray-600 text-gray-300'
+    }`}
+    onClick={onClick}
+    disabled={disabled}
+  >
+    {children}
+  </button>
+);
 
 const FormSkeleton = () => (
   <div className="space-y-5">

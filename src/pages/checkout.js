@@ -1,20 +1,21 @@
-import axios from 'axios';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useContext, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import Layout from '../components/Layout';
 import Button from '../components/UI/Button';
 import Input from '../components/UI/Input';
-import Loader from '../components/UI/Loader';
-import { SettingsContext } from '../contexts/SettingsContext';
-import { UserContext } from '../contexts/UserContext';
-import { decodeB64Object, encodeB64Object } from '../util';
-import Link from 'next/link';
 import LinkButton from '../components/UI/LinkButton';
+import Loader from '../components/UI/Loader';
+import useSettings from '../hooks/useSettings';
+import useUser from '../hooks/useUser';
+import { create as createOrder } from '../services/OrdersService';
+import { decodeB64Object, dsAuthWithState, encodeB64Object } from '../util';
 
 export default function Checkout() {
-  const settings = useContext(SettingsContext);
+  const settings = useSettings();
   const router = useRouter();
-  const user = useContext(UserContext);
+  const user = useUser();
+
   const formData = useMemo(() => (router.query.c ? decodeB64Object(router.query.c) : null), [router.query.c]);
   const max = formData?.mode == 0 ? settings?.maxBuy : settings?.maxSell;
   const credits = Math.max(100, Math.min(Math.round((formData?.credits || 100) / 10) * 10, max));
@@ -23,22 +24,8 @@ export default function Checkout() {
   const handleSubmit = (data) => {
     data.credits = credits;
     data.route = 'checkout';
-    if (user.isReady && user.data) {
-      return axios
-        .post(`${process.env.NEXT_PUBLIC_API_URL}/orders`, { ...data }, { withCredentials: true })
-        .then(({ data }) => setOrder(data))
-        .catch((err) => {
-          if (err.response) {
-            if (err.response.status === 401) {
-              const dataB64 = encodeB64Object(data);
-              window.location.assign(`${process.env.NEXT_PUBLIC_DS_OAUTH}&state=${dataB64}`);
-            } else if (err.response.status === 400) throw err;
-          }
-        });
-    } else {
-      const dataB64 = encodeB64Object(data);
-      window.location.assign(`${process.env.NEXT_PUBLIC_DS_OAUTH}&state=${dataB64}`);
-    }
+    if (user.isReady && user.data) return createOrder(data).then((order) => setOrder(order));
+    else dsAuthWithState();
   };
 
   return (
@@ -75,7 +62,7 @@ export default function Checkout() {
   );
 }
 
-const Form = ({ formData, onSubmit }) => {
+function Form({ formData, onSubmit }) {
   const [dni, setDNI] = useState(formData.dni || '');
   const [paymentAccount, setPaymentAccount] = useState(formData.paymentAccount || '');
   const [account, setAccount] = useState(formData.account || '');
@@ -166,4 +153,4 @@ const Form = ({ formData, onSubmit }) => {
       </Button>
     </form>
   );
-};
+}

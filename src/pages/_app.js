@@ -4,7 +4,7 @@ import Head from 'next/head';
 import { SettingsProvider } from '../contexts/SettingsContext';
 import { UserProvider } from '../contexts/UserContext';
 
-function MyApp({ Component, pageProps }) {
+export default function MyApp({ Component, pageProps }) {
   return (
     <>
       <Head>
@@ -20,5 +20,3 @@ function MyApp({ Component, pageProps }) {
     </>
   );
 }
-
-export default MyApp;

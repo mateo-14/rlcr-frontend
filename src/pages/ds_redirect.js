@@ -1,21 +1,21 @@
 import { useRouter } from 'next/router';
-import { useContext, useEffect } from 'react';
+import { useEffect } from 'react';
 import Layout from '../components/Layout';
 import Button from '../components/UI/Button';
 import Loader from '../components/UI/Loader';
-import { UserContext } from '../contexts/UserContext';
+import useUser from '../hooks/useUser';
 import { decodeB64Object } from '../util';
 
-const DsRedirect = () => {
+export default function DsRedirect() {
   const router = useRouter();
-  const user = useContext(UserContext);
+  const user = useUser();
 
   useEffect(() => {
     if (router.isReady && user.isReady) {
       if (router.query.code && !user.data) {
-        return user
-          .login(router.query.code)
-          .then(() => {
+        const login = async () => {
+          try {
+            await user.login(router.query.code);
             if (router.query.state) {
               const decodedState = decodeB64Object(router.query.state);
               if (decodedState.route === 'checkout') {
@@ -23,14 +23,14 @@ const DsRedirect = () => {
               } else if (decodedState.route === 'orders') {
                 router.replace(`/orders/${decodedState.id}`);
               }
-            } else {
-              router.replace('/');
+              return;
             }
-          })
-          .catch(() => router.replace('/'));
-      } else {
-        router.replace('/');
-      }
+          } catch {}
+
+          router.replace('/');
+        };
+        login();
+      } else router.replace('/');
     }
   }, [router.isReady, user.isReady]);
 
@@ -60,6 +60,4 @@ const DsRedirect = () => {
       </section>
     </Layout>
   );
-};
-
-export default DsRedirect;
+}

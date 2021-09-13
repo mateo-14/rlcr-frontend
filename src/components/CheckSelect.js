@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 
-const CheckSelect = ({ placeholder = '', options = [], onChange, containerClass, className }) => {
+export default function CheckSelect({ placeholder = '', options = [], onChange, containerClass, className }) {
   const ref = useRef();
   const [isShowing, setIsShowing] = useState(false);
 
@@ -64,6 +64,4 @@ const CheckSelect = ({ placeholder = '', options = [], onChange, containerClass,
       )}
     </div>
   );
-};
-
-export default CheckSelect;
+}

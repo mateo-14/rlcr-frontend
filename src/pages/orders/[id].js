@@ -1,18 +1,18 @@
+import Link from 'next/dist/client/link';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Layout from '../../components/Layout';
-import Loader from '../../components/UI/Loader';
-import { SettingsContext } from '../../contexts/SettingsContext';
-import { decodeB64Object, encodeB64Object, formatter, STATUS } from '../../util';
-import Link from 'next/dist/client/link';
-import axios from 'axios';
 import LinkButton from '../../components/UI/LinkButton';
+import Loader from '../../components/UI/Loader';
+import useSettings from '../../hooks/useSettings';
+import { getOrder } from '../../services/OrdersService';
+import { decodeB64Object, dsAuthWithState, formatter, STATUS } from '../../util';
 
 export default function Order() {
   const router = useRouter();
   const [order, setOrder] = useState();
-  const settings = useContext(SettingsContext);
+  const settings = useSettings();
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -27,21 +27,14 @@ export default function Order() {
         return;
       }
     }
-    axios
-      .get(`${process.env.NEXT_PUBLIC_API_URL}/orders/${router.query.id}`, { withCredentials: true })
-      .then(({ data }) => {
+    getOrder(router.query.id)
+      .then((data) => {
         setOrder(data);
         setIsLoading(false);
       })
       .catch((err) => {
-        if (err.response) {
-          if (err.response.status === 401) {
-            const dataB64 = encodeB64Object({ route: 'orders', id: router.query.id });
-            window.location.assign(`${process.env.NEXT_PUBLIC_DS_OAUTH}&state=${dataB64}`);
-            return;
-          }
-        }
-        router.push('/');
+        if (err.response && err.response.status === 401) dsAuthWithState({ route: 'orders', id: router.query.id });
+        else router.push('/');
       });
   }, [router.query.id, router.query.state]);
 

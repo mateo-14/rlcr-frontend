@@ -1,13 +1,12 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { useContext } from 'react';
 import Loader from '../components/UI/Loader';
-import { UserContext } from '../contexts/UserContext';
 import Logo from '../../public/logo.png';
 import HeaderUser from './HeaderUser';
+import useUser from '../hooks/useUser';
 
 export default function Layout({ children, className = '' }) {
-  const { isReady } = useContext(UserContext);
+  const { isReady } = useUser();
 
   return (
     <div className="bg-gray-800 min-h-screen flex flex-col">
