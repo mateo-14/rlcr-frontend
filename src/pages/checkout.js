@@ -25,7 +25,7 @@ export default function Checkout() {
     data.credits = credits;
     data.route = 'checkout';
     if (user.isReady && user.data) return createOrder(data).then((order) => setOrder(order));
-    else dsAuthWithState();
+    else dsAuthWithState(data);
   };
 
   return (

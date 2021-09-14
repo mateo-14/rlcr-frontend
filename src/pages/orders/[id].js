@@ -43,7 +43,7 @@ export default function Order() {
       <Head>
         <title>Pedido {router.query.id}</title>
       </Head>
-      <section className="my-auto p-10 bg-gray-700 sm:shadow-xl sm:rounded-xl sm:mx-auto sm:max-w-screen-sm">
+      <section className="my-auto p-10 bg-gray-700 sm:shadow-xl sm:rounded-xl sm:mx-auto sm:max-w-screen-sm sm:w-1/3 sm:min-w-min">
         {isLoading || !settings ? (
           <Loader size="w-16 h-16" className="m-auto" />
         ) : (

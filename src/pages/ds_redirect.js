@@ -11,26 +11,27 @@ export default function DsRedirect() {
   const user = useUser();
 
   useEffect(() => {
-    if (router.isReady && user.isReady) {
-      if (router.query.code && !user.data) {
-        const login = async () => {
-          try {
-            await user.login(router.query.code);
-            if (router.query.state) {
-              const decodedState = decodeB64Object(router.query.state);
-              if (decodedState.route === 'checkout') {
-                router.replace(`/checkout?c=${router.query.state}`);
-              } else if (decodedState.route === 'orders') {
-                router.replace(`/orders/${decodedState.id}`);
-              }
-              return;
-            }
-          } catch {}
+    if (!router.isReady || !user.isReady) return;
+    if (!router.query.code && !router.query.error) return router.replace('/');
 
-          router.replace('/');
-        };
-        login();
-      } else router.replace('/');
+    if (!user.data && router.query.code) {
+      const login = async () => {
+        try {
+          await user.login(router.query.code);
+          if (router.query.state) {
+            const decodedState = decodeB64Object(router.query.state);
+            console.log(decodedState);
+            if (decodedState.route === 'checkout') {
+              router.replace(`/checkout?c=${router.query.state}`);
+            } else if (decodedState.route === 'orders') {
+              router.replace(`/orders/${decodedState.id}`);
+            }
+            return;
+          }
+        } catch {}
+        router.replace('/');
+      };
+      login();
     }
   }, [router.isReady, user.isReady]);
 
@@ -51,7 +52,7 @@ export default function DsRedirect() {
                   `${process.env.NEXT_PUBLIC_DS_OAUTH}${router.query.state ? `&state=${router.query.state}` : ''}`
                 )
               }
-              className="w-full"
+              className="w-full mt-4"
             >
               Reintentar
             </Button>

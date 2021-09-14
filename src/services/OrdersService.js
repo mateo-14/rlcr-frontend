@@ -6,6 +6,7 @@ export function create(data) {
     .post(`${process.env.NEXT_PUBLIC_API_URL}/orders`, { ...data }, { withCredentials: true })
     .then(({ data }) => data)
     .catch((err) => {
+      console.log(err);
       if (err.response) {
         if (err.response.status === 401) {
           dsAuthWithState();

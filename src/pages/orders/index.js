@@ -102,7 +102,7 @@ export default function Order() {
             <span className={`px-2 font-semibold rounded-full bg-purple-500 text-gray-300`}>Completado</span> El pedido
             se completó.
           </p>
-          <Button className="disabled:opacity-50 w-full lg:w-auto" onClick={handleClick} disabled={isLast}>
+          <Button className="disabled:opacity-50 w-full lg:w-auto mt-3 lg:mt-0" onClick={handleClick} disabled={isLast}>
             Cargar más
           </Button>
         </div>
