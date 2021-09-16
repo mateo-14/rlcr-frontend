@@ -7,7 +7,7 @@ import Button from '../../components/UI/Button';
 import Loader from '../../components/UI/Loader';
 import useSettings from '../../hooks/useSettings';
 import { encodeB64Object, formatter, STATUS } from '../../util';
-import { getAll as getAllOrders } from '../../services/OrdersService';
+import { getAllOrders } from '../../services/OrdersService';
 
 export default function Order() {
   const [orders, setOrders] = useState([]);
@@ -56,6 +56,7 @@ export default function Order() {
                 <th className="px-6 py-3 text-left text-sm font-medium text-gray-300 uppercase">Precio</th>
                 <th className="px-6 py-3 text-left text-sm font-medium text-gray-300 uppercase">Tipo</th>
                 <th className="px-6 py-3 text-left text-sm font-medium text-gray-300 uppercase">Método de pago</th>
+                <th className="px-6 py-3 text-left text-sm font-medium text-gray-300 uppercase">EpicGames</th>
                 <th className="px-6 py-3 text-left text-sm font-medium text-gray-300 uppercase">Estado</th>
               </tr>
             </thead>
@@ -82,6 +83,7 @@ export default function Order() {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-medium">
                       {settings.paymentMethods[order.paymentMethodID]?.name}
                     </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-medium">{order.account}</td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className="px-2 text-xs leading-5 font-semibold rounded-full bg-purple-500 text-gray-300">
                         {STATUS[order.status]}

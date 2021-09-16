@@ -1,14 +1,14 @@
 import axios from 'axios';
 import Image from 'next/image';
-import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect, useRef, useState } from 'react';
-import { formatter, STATUS } from '../../util';
-import CheckSelect from '../../components/CheckSelect';
+import { useDispatch, useSelector } from 'react-redux';
 import TableRowLoading from '../../components/TableRowLoading';
+import CheckSelect from '../../components/UI/CheckSelect';
 import useSettings from '../../hooks/useSettings';
-import { adminGetAllOrders, adminUpdateOrder } from '../../services/OrdersService';
-import { get as getUser } from '../../services/UsersService';
+import { formatter, STATUS } from '../../util';
+import { fetchUsers } from '../adminUsers/adminUsersSlice';
+import { clear, fetchOrders, updateOrder } from './adminOrdersSlice';
 
 const statusQueryToOptions = (status) => [
   {
@@ -38,28 +38,31 @@ function queryToSearchParams(query) {
   return searchParams;
 }
 
-export default function Orders() {
+export default function AdminOrders() {
+  const dispatch = useDispatch();
   const router = useRouter();
   const options = statusQueryToOptions(router.query?.status);
-  const [orders, setOrders] = useState();
+  const isFetching = useSelector(({ adminOrders }) => adminOrders.isFetching);
 
   useEffect(() => {
     let token;
     if (router.isReady) {
       const searchParams = queryToSearchParams(router.query);
-      setOrders(null);
       token = axios.CancelToken.source();
-      adminGetAllOrders(searchParams.toString(), token.token)
-        .then((data) => setOrders(data))
+      dispatch(fetchOrders({ query: searchParams, cancelToken: token.token }))
+        .unwrap()
         .catch((err) => {
-          if (!axios.isCancel(err)) {
+          if (!err.isAxiosCancel && !err.name === 'ConditionError') {
             alert('Hubo un error, decile al programadorcito de cuarta que mire la consola y el Log de Heroku');
             console.error(err);
           }
         });
     }
-    return () => token?.cancel();
-  }, [router.isReady, router.query]);
+    return () => {
+      token?.cancel();
+      dispatch(clear());
+    };
+  }, [router.isReady, router.query, dispatch]);
 
   const handleSortChange = (query) => {
     delete query.params;
@@ -97,7 +100,7 @@ export default function Orders() {
           <thead>
             <tr>
               <th className="px-6 py-3 text-left text-sm font-medium text-gray-300 uppercase">ID</th>
-              <th className="px-6 py-3 text-left text-sm font-medium text-gray-300 uppercase">User ID</th>
+              <th className="px-6 py-3 text-left text-sm font-medium text-gray-300 uppercase">User</th>
               <th
                 className="px-6 py-3 text-left text-sm font-medium text-gray-300 uppercase flex items-center cursor-pointer"
                 onClick={handleSortOrderChange}
@@ -123,13 +126,12 @@ export default function Orders() {
               <th className="px-6 py-3 text-left text-sm font-medium text-gray-300 uppercase">Precio</th>
               <th className="px-6 py-3 text-left text-sm font-medium text-gray-300 uppercase">Tipo</th>
               <th className="px-6 py-3 text-left text-sm font-medium text-gray-300 uppercase">Método</th>
-              <th className="px-6 py-3 text-left text-sm font-medium text-gray-300 uppercase">Cuenta</th>
+              <th className="px-6 py-3 text-left text-sm font-medium text-gray-300 uppercase">EpicGames</th>
               <th className="px-6 py-3 text-left text-sm font-medium text-gray-300 uppercase">Estado</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-600">
-            {!orders && <TableRowLoading cols={9} />}
-            <OrdersList orders={orders} />
+            {isFetching ? <TableRowLoading cols={9} /> : <OrdersList />}
           </tbody>
         </table>
       </div>
@@ -137,29 +139,36 @@ export default function Orders() {
   );
 }
 
-const OrdersList = ({ orders }) => {
-  const token = useRef();
+const OrdersList = () => {
+  const dispatch = useDispatch();
   const timeout = useRef();
-  const cachedUsers = useRef(new Map());
   const settings = useSettings();
+  const { orders, users } = useSelector(({ adminOrders, adminUsers }) => ({
+    orders: adminOrders.orders,
+    users: adminUsers.users,
+  }));
+  const token = useRef();
   const [shownUser, setShownUser] = useState();
 
-  const handleMouseEnter = (order) => {
-    if (cachedUsers.current.has(order.userID)) {
-      setShownUser({ ...cachedUsers.current.get(order.userID), orderID: order.id });
-      return;
+  const findUser = (order) => {
+    let user = users?.find((user) => user.id === order.userID);
+    if (user) {
+      setShownUser({ ...user, orderID: order.id });
+      return true;
     }
+  };
+  const handleMouseEnter = (order) => {
+    if (findUser(order)) return;
 
     timeout.current = setTimeout(() => {
       token.current = axios.CancelToken.source();
-      getUser(order.userID, token.current.token)
-        .then((data) => {
-          const _shownUser = { ...data, id: order.userID };
-          cachedUsers.current.set(order.userID, _shownUser);
-          setShownUser({ ..._shownUser, orderID: order.id });
+      dispatch(fetchUsers(token.current.token))
+        .unwrap()
+        .then(() => {
+          findUser(order);
         })
         .catch((err) => {
-          if (!axios.isCancel(err)) {
+          if (!err.isAxiosCancel && !err.name === 'ConditionError') {
             alert('Hubo un error, decile al programadorcito de cuarta que mire la consola y el Log de Heroku');
             console.error(err);
           }
@@ -197,56 +206,61 @@ const OrdersList = ({ orders }) => {
   );
 };
 
-const OrderRow = ({ settings, order, onMouseEnter, onMouseLeave, shownUser }) => (
-  <tr>
-    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-medium">{order.id}</td>
-    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-medium">
-      <Link href={`/admin/users/${order.userID}`}>
-        <a
+function OrderRow({ settings, order, onMouseEnter, onMouseLeave, shownUser }) {
+  const user = useSelector(({ adminUsers }) => adminUsers.users?.find((user) => user.id === order.userID));
+
+  return (
+    <tr>
+      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-medium">{order.id}</td>
+      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-medium">
+        <span
           className="relative cursor-pointer hover:text-purple-500"
           onMouseEnter={() => onMouseEnter(order)}
           onMouseLeave={() => onMouseLeave(order)}
         >
-          {order.userID}
+          {user ? `${user.username}#${user.discriminator}` : order.userID}
           {shownUser && (
-            <div className="absolute left-0 top-full bg-gray-800 rounded-xl shadow-xl text-white px-2 py-3 z-10 flex items-center w-max">
-              <Image
-                className="rounded-full"
-                alt="Foto de perfil"
-                src={`https://cdn.discordapp.com/avatars/${shownUser.id}/${shownUser.avatar}.jpg`}
-                height="42"
-                width="42"
-              ></Image>
-              <span className="ml-3">{`${shownUser.username}#${shownUser.discriminator}`}</span>
+            <div className="absolute left-0 top-full bg-gray-800 rounded-xl shadow-xl text-white px-2 py-3 z-10 w-max">
+              <div className="flex items-center">
+                <Image
+                  className="rounded-full"
+                  alt="Foto de perfil"
+                  src={`https://cdn.discordapp.com/avatars/${shownUser.id}/${shownUser.avatar}.jpg`}
+                  height="42"
+                  width="42"
+                ></Image>
+                <span className="ml-3">{`${shownUser.username}#${shownUser.discriminator}`}</span>
+              </div>
+              <span className="text-xs text-center w-full block mt-2">{shownUser.id}</span>
             </div>
           )}
-        </a>
-      </Link>
-    </td>
-    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-medium">
-      {new Date(order.createdAt).toLocaleString()}
-    </td>
-    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-medium">{order.credits}</td>
-    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-medium">{formatter.format(order.price)}</td>
-    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-medium">
-      {order.mode === 0 ? 'Compra' : 'Venta'}
-    </td>
-    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-medium">
-      {settings?.paymentMethods[order.paymentMethodID]?.name || '...'}
-    </td>
-    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-medium">{order.account}</td>
-    <td className="px-6 py-4 whitespace-nowrap">
-      <span className="px-2 text-xs leading-5 font-semibold rounded-full bg-purple-500 text-gray-300">
-        {STATUS[order.status]}
-      </span>
-    </td>
-    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-medium">
-      {order.status === 0 && <OrderOptions order={order} />}
-    </td>
-  </tr>
-);
-
+        </span>
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-medium">
+        {new Date(order.createdAt).toLocaleString()}
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-medium">{order.credits}</td>
+      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-medium">{formatter.format(order.price)}</td>
+      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-medium">
+        {order.mode === 0 ? 'Compra' : 'Venta'}
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-medium">
+        {settings?.paymentMethods[order.paymentMethodID]?.name || '...'}
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-medium">{order.account}</td>
+      <td className="px-6 py-4 whitespace-nowrap">
+        <span className="px-2 text-xs leading-5 font-semibold rounded-full bg-purple-500 text-gray-300">
+          {STATUS[order.status]}
+        </span>
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-medium">
+        {order.status === 0 && <OrderOptions order={order} />}
+      </td>
+    </tr>
+  );
+}
 function OrderOptions({ order }) {
+  const dispatch = useDispatch();
   const [isShowing, setIsShowing] = useState(false);
 
   const handleClick = () => setIsShowing(!isShowing);
@@ -254,22 +268,26 @@ function OrderOptions({ order }) {
   const handleClickCopy = () => {
     navigator.permissions.query({ name: 'clipboard-write' }).then((result) => {
       if (result.state == 'granted' || result.state == 'prompt') {
-        navigator.clipboard.writeText('test');
+        navigator.clipboard.writeText(`Hola! Soy moderador de https://rlgo.store
+Recibimos un pedido (**${order.id}**) de **${order.credits}** de **${order.credits}** créditos por **ARS$ ${order.price}** para la cuenta de EpicGames **${order.account}**.
+Te mandamos una solicitud con nuestra cuenta de EpicGames  **rlgostore** a **${order.account}**. 
+**Por favor, responde a este mensaje para continuar con la transacción.**
+**_Verificá que el usuario que envió este mensaje es moderador en nuestro server de Discord RLGO STORE | Compra y venta de créditos para Rocket League_**`);
       }
     });
+    setIsShowing(false);
   };
 
   const handleClickComplete = () => {
     setIsShowing(false);
-    adminUpdateOrder(order.id, { status: 1, userID: order.userID })
-      .then((newData) => {
-        alert(`Order (${newData.id}) updated. F5 para actualizar la vista`);
-      })
+    dispatch(updateOrder({ id: order.id, data: { status: 1, userID: order.userID } }))
+      .unwrap()
       .catch((err) => {
         alert('Hubo un error, decile al programadorcito de cuarta que mire la consola y el Log de Heroku');
         console.error(err);
       });
   };
+
   return (
     <div className="relative">
       <button onClick={handleClick}>

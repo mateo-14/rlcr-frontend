@@ -2,8 +2,8 @@ import { forwardRef, useRef, useState } from 'react';
 import Image from 'next/image';
 import { CSSTransition } from 'react-transition-group';
 import Link from 'next/link';
-import Loader from './UI/Loader';
-import useUser from '../hooks/useUser';
+import Loader from '../../components/UI/Loader';
+import { useSelector } from 'react-redux';
 
 const MenuItem = ({ children }) => <div className="flex px-4 py-2 font-medium hover:bg-gray-500">{children}</div>;
 
@@ -136,14 +136,14 @@ function Avatar({ user }) {
 }
 
 export default function HeaderUser() {
-  const user = useUser();
+  const user = useSelector(({ user }) => user);
   const handleClick = () => {
     window.location.assign(process.env.NEXT_PUBLIC_DS_OAUTH);
   };
 
-  return user.data ? (
+  return user.isLogged ? (
     <Avatar user={user.data} />
-  ) : user.isReady && !user.isLogging ? (
+  ) : !user.isLoading && !user.isLogged ? (
     <button className="bg-indigo-500 font-medium rounded-xl text-white py-2 px-4 flex" onClick={handleClick}>
       <svg
         xmlns="http://www.w3.org/2000/svg"

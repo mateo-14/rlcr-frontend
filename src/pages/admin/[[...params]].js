@@ -1,18 +1,21 @@
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
-import Orders from '../../components/admin/Orders';
-import Users from '../../components/admin/Users';
-import HeaderUser from '../../components/HeaderUser';
-import useUser from '../../hooks/useUser';
+import { useDispatch, useSelector } from 'react-redux';
+import AdminOrders from '../../features/adminOrders/AdminOrders';
+import AdminUsers from '../../features/adminUsers/AdminUsers';
+import { fetchUsers } from '../../features/adminUsers/adminUsersSlice';
+import HeaderUser from '../../features/user/HeaderUser';
 
 export default function Admin() {
-  const user = useUser();
+  const user = useSelector(({ user }) => user);
   const router = useRouter();
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    if (user.isReady && !user.data?.isAdmin) router.push('/');
-  }, [user.isReady]);
+    if (user.isReady && !user.data?.isAdmin) return router.push('/');
+    dispatch(fetchUsers());
+  }, [user.isReady, dispatch]);
 
   return (
     <div className="flex min-h-screen">
@@ -30,9 +33,9 @@ export default function Admin() {
             </header>
             <div className="mx-10 mb-8 flex flex-col flex-1">
               {router.query.params?.[0] === 'users' ? (
-                <Users />
+                <AdminUsers />
               ) : router.query.params?.[0] === 'orders' ? (
-                <Orders />
+                <AdminOrders />
               ) : null}
             </div>
           </main>

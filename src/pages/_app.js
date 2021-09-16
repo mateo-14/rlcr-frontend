@@ -1,9 +1,11 @@
-import 'tailwindcss/tailwind.css';
-
 import Head from 'next/head';
+import { Provider } from 'react-redux';
+import 'tailwindcss/tailwind.css';
 import { SettingsProvider } from '../contexts/SettingsContext';
-import { UserProvider } from '../contexts/UserContext';
+import { tokenLogin } from '../features/user/userSlice';
+import { store } from '../store';
 
+store.dispatch(tokenLogin());
 export default function MyApp({ Component, pageProps }) {
   return (
     <>
@@ -18,11 +20,11 @@ export default function MyApp({ Component, pageProps }) {
         <meta name="msapplication-TileColor" content="#da532c" />
         <meta name="theme-color" content="#ffffff" />
       </Head>
-      <UserProvider>
+      <Provider store={store}>
         <SettingsProvider>
           <Component {...pageProps} />
         </SettingsProvider>
-      </UserProvider>
+      </Provider>
     </>
   );
 }

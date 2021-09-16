@@ -1,23 +1,26 @@
 import { useRouter } from 'next/router';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import Layout from '../components/Layout';
 import Button from '../components/UI/Button';
 import Loader from '../components/UI/Loader';
-import useUser from '../hooks/useUser';
+import { login } from '../features/user/userSlice';
 import { decodeB64Object } from '../util';
 
 export default function DsRedirect() {
+  const { isLoading, isLogged } = useSelector(({ user }) => ({ isLoading: user.isLoaing, isLogged: user.isLogged }));
+  const dispatch = useDispatch();
   const router = useRouter();
-  const user = useUser();
+  const [isLoginError, setIsLoginError] = useState(false);
 
   useEffect(() => {
-    if (!router.isReady || !user.isReady) return;
+    if (!router.isReady || isLoading) return;
     if (!router.query.code && !router.query.error) return router.replace('/');
 
-    if (!user.data && router.query.code) {
-      const login = async () => {
-        try {
-          await user.login(router.query.code);
+    if (!isLogged && router.query.code && !isLoginError) {
+      dispatch(login(router.query.code))
+        .unwrap()
+        .then(() => {
           if (router.query.state) {
             const decodedState = decodeB64Object(router.query.state);
             console.log(decodedState);
@@ -28,17 +31,16 @@ export default function DsRedirect() {
             }
             return;
           }
-        } catch {}
-        router.replace('/');
-      };
-      login();
+          router.replace('/');
+        })
+        .catch(() => setIsLoginError(true));
     }
-  }, [router.isReady, user.isReady]);
+  }, [router.isReady, isLoading, dispatch]);
 
   return (
     <Layout>
       <section className="bg-gray-700 rounded-xl shadow-xl flex items-center flex-col m-auto px-4 py-6 max-w-sm">
-        {!router.query.error ? (
+        {!router.query.error && !isLoginError ? (
           <>
             <h2 className="text-white text-3xl">Iniciando sesión...</h2>
             <Loader size="w-12 h-12" className="mt-4" />

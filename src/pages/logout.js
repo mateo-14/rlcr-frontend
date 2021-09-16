@@ -1,27 +1,28 @@
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
-import useUser from '../hooks/useUser';
+import { useDispatch, useSelector } from 'react-redux';
+import { logout } from '../features/user/userSlice';
 
 export default function Logout() {
-  const { logout, isReady, data } = useUser();
+  const { isLoading, isLogged } = useSelector(({ user }) => ({ isLoading: user.isLoaing, isLogged: user.isLogged }));
+  const dispatch = useDispatch();
   const router = useRouter();
 
   useEffect(() => {
-    if (!router.isReady || !isReady) return;
+    if (!router.isReady || isLoading) return;
 
-    const asyncLogout = async () => {
-      try {
-        await logout();
-      } catch {}
-      router.push('/');
-    };
-
-    if (data) {
+    if (isLogged) {
+      const asyncLogout = async () => {
+        try {
+          await dispatch(logout());
+        } catch {}
+        router.push('/');
+      };
       asyncLogout();
     } else {
       router.push('/');
     }
-  }, [router.isReady, isReady]);
+  }, [router.isReady, isLoading, dispatch]);
 
   return <div></div>;
 }

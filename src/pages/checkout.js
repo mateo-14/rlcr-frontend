@@ -1,30 +1,30 @@
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useMemo, useState } from 'react';
+import { useSelector } from 'react-redux';
 import Layout from '../components/Layout';
 import Button from '../components/UI/Button';
 import Input from '../components/UI/Input';
 import LinkButton from '../components/UI/LinkButton';
 import Loader from '../components/UI/Loader';
 import useSettings from '../hooks/useSettings';
-import useUser from '../hooks/useUser';
 import { createOrder } from '../services/OrdersService';
 import { decodeB64Object, dsAuthWithState, encodeB64Object } from '../util';
 
 export default function Checkout() {
   const settings = useSettings();
   const router = useRouter();
-  const user = useUser();
+  const user = useSelector(({ user }) => user);
+  const [order, setOrder] = useState();
 
   const formData = useMemo(() => (router.query.c ? decodeB64Object(router.query.c) : null), [router.query.c]);
   const max = formData?.mode == 0 ? settings?.maxBuy : settings?.maxSell;
   const credits = Math.max(100, Math.min(Math.round((formData?.credits || 100) / 10) * 10, max));
-  const [order, setOrder] = useState();
 
   const handleSubmit = (data) => {
     data.credits = credits;
     data.route = 'checkout';
-    if (user.isReady && user.data) return createOrder(data).then((order) => setOrder(order));
+    if (user.isLogged) return createOrder(data).then((order) => setOrder(order));
     else dsAuthWithState(data);
   };
 
@@ -33,7 +33,7 @@ export default function Checkout() {
       <section className="my-auto bg-gray-700 sm:rounded-xl sm:shadow-xl px-6 py-10">
         {settings &&
           formData &&
-          user.isReady &&
+          !user.isLoading &&
           (order ? (
             <>
               <h1 className="text-4xl text-white mb-4">Pedido realizado!</h1>
@@ -134,14 +134,14 @@ function Form({ formData, onSubmit }) {
       ) : null}
 
       <Input
-        label="Link de tu perfil de Steam o usuario de Epic Games"
+        label="Tu usuario de Epic Games"
         id="account"
         required
         onChange={({ currentTarget }) => setAccount(currentTarget.value)}
         value={account}
         errors={errors}
         minLength={3}
-        maxLength={80}
+        maxLength={16}
       />
       <p className="text-white mt-6 mb-4">
         * Al confirmar es necesario que autorices nuestra aplicación de Discord para seguir con el proceso de pago. (Es
