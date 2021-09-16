@@ -281,6 +281,7 @@ function OrderOptions({ order }) {
 Recibimos un pedido (**${order.id}**) de **${order.credits}** de **${order.credits}** créditos por **ARS$ ${order.price}** para la cuenta de EpicGames **${order.account}**.
 Te mandamos una solicitud con nuestra cuenta de EpicGames  **rlgostore** a **${order.account}**. 
 **Por favor, responde a este mensaje para continuar con la transacción.**
+**En caso de no responder el pedido será cancelado en 48hs.**
 **_Verificá que el usuario que envió este mensaje es moderador en nuestro server de Discord RLGO STORE | Compra y venta de créditos para Rocket League_**`);
       }
     });
