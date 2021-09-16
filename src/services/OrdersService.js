@@ -1,9 +1,9 @@
 import axios from 'axios';
 import { dsAuthWithState } from '../util';
 
-export function create(data) {
+export function createOrder(data) {
   return axios
-    .post(`${process.env.NEXT_PUBLIC_API_URL}/orders`, { ...data }, { withCredentials: true })
+    .post(`${process.env.NEXT_PUBLIC_API_URL}/orders`, data, { withCredentials: true })
     .then(({ data }) => data)
     .catch((err) => {
       console.log(err);
@@ -15,7 +15,7 @@ export function create(data) {
     });
 }
 
-export function getAll(startAfter) {
+export function getAllOrders(startAfter) {
   return axios
     .get(`${process.env.NEXT_PUBLIC_API_URL}/orders${startAfter ? `?startAfter=${startAfter}` : ''}`, {
       withCredentials: true,
@@ -23,17 +23,23 @@ export function getAll(startAfter) {
     .then(({ data }) => data);
 }
 
-export function get(id) {
+export function getOrder(id) {
   return axios
     .get(`${process.env.NEXT_PUBLIC_API_URL}/orders/${id}`, { withCredentials: true })
     .then(({ data }) => data);
 }
 
-export function getAllAdmin(query, cancelToken) {
+export function adminGetAllOrders(query, cancelToken) {
   return axios
     .get(`${process.env.NEXT_PUBLIC_API_URL}/orders/all?${query}`, {
       withCredentials: true,
       cancelToken,
     })
+    .then(({ data }) => data);
+}
+
+export function adminUpdateOrder(id, data) {
+  return axios
+    .put(`${process.env.NEXT_PUBLIC_API_URL}/orders/${id}`, data, { withCredentials: true })
     .then(({ data }) => data);
 }

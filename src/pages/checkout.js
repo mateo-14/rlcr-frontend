@@ -8,7 +8,7 @@ import LinkButton from '../components/UI/LinkButton';
 import Loader from '../components/UI/Loader';
 import useSettings from '../hooks/useSettings';
 import useUser from '../hooks/useUser';
-import { create as createOrder } from '../services/OrdersService';
+import { createOrder } from '../services/OrdersService';
 import { decodeB64Object, dsAuthWithState, encodeB64Object } from '../util';
 
 export default function Checkout() {

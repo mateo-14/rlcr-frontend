@@ -3,14 +3,14 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import TableRowLoading from '../../components/TableRowLoading';
-import { getAllAdmin as getAllUsersAdmin } from '../../services/UsersService';
+import { adminGetAllUsers } from '../../services/UsersService';
 
 const Users = () => {
   const [users, setUsers] = useState();
 
   useEffect(() => {
     const token = axios.CancelToken.source();
-    getAllUsersAdmin(token.token)
+    adminGetAllUsers(token.token)
       .then((data) => setUsers(data))
       .catch((err) => {
         if (!axios.isCancel(err)) {

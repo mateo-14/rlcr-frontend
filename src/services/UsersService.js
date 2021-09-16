@@ -14,7 +14,7 @@ export function logout() {
   return axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/logout`, null, { withCredentials: true });
 }
 
-export function get(id, cancelToken) {
+export function getUser(id, cancelToken) {
   return axios
     .get(`${process.env.NEXT_PUBLIC_API_URL}/users/${id}`, {
       withCredentials: true,
@@ -23,7 +23,7 @@ export function get(id, cancelToken) {
     .then(({ data }) => data);
 }
 
-export function getAllAdmin(cancelToken) {
+export function adminGetAllUsers(cancelToken) {
   return axios
     .get(`${process.env.NEXT_PUBLIC_API_URL}/users/all`, { withCredentials: true, cancelToken })
     .then(({ data }) => data);

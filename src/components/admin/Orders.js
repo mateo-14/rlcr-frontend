@@ -7,7 +7,7 @@ import { formatter, STATUS } from '../../util';
 import CheckSelect from '../../components/CheckSelect';
 import TableRowLoading from '../../components/TableRowLoading';
 import useSettings from '../../hooks/useSettings';
-import { getAllAdmin as getAllOrdersAdmin } from '../../services/OrdersService';
+import { adminGetAllOrders, adminUpdateOrder } from '../../services/OrdersService';
 import { get as getUser } from '../../services/UsersService';
 
 const statusQueryToOptions = (status) => [
@@ -23,7 +23,7 @@ const statusQueryToOptions = (status) => [
   },
 ];
 
-const queryToSearchParams = (query) => {
+function queryToSearchParams(query) {
   query = { ...query };
   delete query.params;
   const searchParams = new URLSearchParams(query);
@@ -36,9 +36,9 @@ const queryToSearchParams = (query) => {
     else searchParams.append('status[]', query.status);
   }
   return searchParams;
-};
+}
 
-const Orders = () => {
+export default function Orders() {
   const router = useRouter();
   const options = statusQueryToOptions(router.query?.status);
   const [orders, setOrders] = useState();
@@ -49,7 +49,7 @@ const Orders = () => {
       const searchParams = queryToSearchParams(router.query);
       setOrders(null);
       token = axios.CancelToken.source();
-      getAllOrdersAdmin(searchParams.toString(), token.token)
+      adminGetAllOrders(searchParams.toString(), token.token)
         .then((data) => setOrders(data))
         .catch((err) => {
           if (!axios.isCancel(err)) {
@@ -122,19 +122,20 @@ const Orders = () => {
               <th className="px-6 py-3 text-left text-sm font-medium text-gray-300 uppercase">Créditos</th>
               <th className="px-6 py-3 text-left text-sm font-medium text-gray-300 uppercase">Precio</th>
               <th className="px-6 py-3 text-left text-sm font-medium text-gray-300 uppercase">Tipo</th>
-              <th className="px-6 py-3 text-left text-sm font-medium text-gray-300 uppercase">Método de pago</th>
+              <th className="px-6 py-3 text-left text-sm font-medium text-gray-300 uppercase">Método</th>
+              <th className="px-6 py-3 text-left text-sm font-medium text-gray-300 uppercase">Cuenta</th>
               <th className="px-6 py-3 text-left text-sm font-medium text-gray-300 uppercase">Estado</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-600">
-            {!orders && <TableRowLoading cols={8} />}
+            {!orders && <TableRowLoading cols={9} />}
             <OrdersList orders={orders} />
           </tbody>
         </table>
       </div>
     </>
   );
-};
+}
 
 const OrdersList = ({ orders }) => {
   const token = useRef();
@@ -196,51 +197,107 @@ const OrdersList = ({ orders }) => {
   );
 };
 
-const OrderRow = ({ settings, order, onMouseEnter, onMouseLeave, shownUser }) => {
-  return (
-    <tr>
-      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-medium">{order.id}</td>
-      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-medium">
-        <Link href={`/admin/users/${order.userID}`}>
-          <a
-            className="relative cursor-pointer hover:text-purple-500"
-            onMouseEnter={() => onMouseEnter(order)}
-            onMouseLeave={() => onMouseLeave(order)}
-          >
-            {order.userID}
-            {shownUser && (
-              <div className="absolute left-0 top-full bg-gray-800 rounded-xl shadow-xl text-white px-2 py-3 z-10 flex items-center w-max">
-                <Image
-                  className="rounded-full"
-                  alt="Foto de perfil"
-                  src={`https://cdn.discordapp.com/avatars/${shownUser.id}/${shownUser.avatar}.jpg`}
-                  height="42"
-                  width="42"
-                ></Image>
-                <span className="ml-3">{`${shownUser.username}#${shownUser.discriminator}`}</span>
-              </div>
-            )}
-          </a>
-        </Link>
-      </td>
-      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-medium">
-        {new Date(order.createdAt).toLocaleString()}
-      </td>
-      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-medium">{order.credits}</td>
-      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-medium">{formatter.format(order.price)}</td>
-      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-medium">
-        {order.mode === 0 ? 'Compra' : 'Venta'}
-      </td>
-      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-medium">
-        {settings?.paymentMethods[order.paymentMethodID]?.name || '...'}
-      </td>
-      <td className="px-6 py-4 whitespace-nowrap">
-        <span className="px-2 text-xs leading-5 font-semibold rounded-full bg-purple-500 text-gray-300">
-          {STATUS[order.status]}
-        </span>
-      </td>
-    </tr>
-  );
-};
+const OrderRow = ({ settings, order, onMouseEnter, onMouseLeave, shownUser }) => (
+  <tr>
+    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-medium">{order.id}</td>
+    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-medium">
+      <Link href={`/admin/users/${order.userID}`}>
+        <a
+          className="relative cursor-pointer hover:text-purple-500"
+          onMouseEnter={() => onMouseEnter(order)}
+          onMouseLeave={() => onMouseLeave(order)}
+        >
+          {order.userID}
+          {shownUser && (
+            <div className="absolute left-0 top-full bg-gray-800 rounded-xl shadow-xl text-white px-2 py-3 z-10 flex items-center w-max">
+              <Image
+                className="rounded-full"
+                alt="Foto de perfil"
+                src={`https://cdn.discordapp.com/avatars/${shownUser.id}/${shownUser.avatar}.jpg`}
+                height="42"
+                width="42"
+              ></Image>
+              <span className="ml-3">{`${shownUser.username}#${shownUser.discriminator}`}</span>
+            </div>
+          )}
+        </a>
+      </Link>
+    </td>
+    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-medium">
+      {new Date(order.createdAt).toLocaleString()}
+    </td>
+    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-medium">{order.credits}</td>
+    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-medium">{formatter.format(order.price)}</td>
+    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-medium">
+      {order.mode === 0 ? 'Compra' : 'Venta'}
+    </td>
+    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-medium">
+      {settings?.paymentMethods[order.paymentMethodID]?.name || '...'}
+    </td>
+    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-medium">{order.account}</td>
+    <td className="px-6 py-4 whitespace-nowrap">
+      <span className="px-2 text-xs leading-5 font-semibold rounded-full bg-purple-500 text-gray-300">
+        {STATUS[order.status]}
+      </span>
+    </td>
+    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-medium">
+      {order.status === 0 && <OrderOptions order={order} />}
+    </td>
+  </tr>
+);
 
-export default Orders;
+function OrderOptions({ order }) {
+  const [isShowing, setIsShowing] = useState(false);
+
+  const handleClick = () => setIsShowing(!isShowing);
+
+  const handleClickCopy = () => {
+    navigator.permissions.query({ name: 'clipboard-write' }).then((result) => {
+      if (result.state == 'granted' || result.state == 'prompt') {
+        navigator.clipboard.writeText('test');
+      }
+    });
+  };
+
+  const handleClickComplete = () => {
+    setIsShowing(false);
+    adminUpdateOrder(order.id, { status: 1, userID: order.userID })
+      .then((newData) => {
+        alert(`Order (${newData.id}) updated. F5 para actualizar la vista`);
+      })
+      .catch((err) => {
+        alert('Hubo un error, decile al programadorcito de cuarta que mire la consola y el Log de Heroku');
+        console.error(err);
+      });
+  };
+  return (
+    <div className="relative">
+      <button onClick={handleClick}>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-6 w-6"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"
+          />
+        </svg>
+      </button>
+      {isShowing && (
+        <div className="absolute right-0 bg-gray-600 rounded-xl shadow-xl text-white flex flex-col py-3 text-c">
+          <button className="hover:bg-gray-500 px-2 py-1 text-sm text-left" onClick={handleClickCopy}>
+            Copiar mensaje
+          </button>
+          <button className="hover:bg-gray-500 px-2 py-1 text-sm text-left" onClick={handleClickComplete}>
+            Completar transacción
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}

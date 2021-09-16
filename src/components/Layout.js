@@ -29,15 +29,6 @@ export default function Layout({ children, className = '' }) {
           <a className="text-purple-400" href="https://rlgo.store">
             rlgo.store
           </a>
-          <br />
-          Desarrollado por {''}
-          <a className="text-purple-400" href="https://github.com/Nico-14" target="_blank" rel="noreferrer">
-            Nico-14
-          </a>
-          {' - '}
-          <a className="text-purple-400" href="https://paranadev.com" target="_blank" rel="noreferrer">
-            paranadev.com
-          </a>
         </p>
       </footer>
     </div>
