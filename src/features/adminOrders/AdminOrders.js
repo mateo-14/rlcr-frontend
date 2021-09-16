@@ -43,6 +43,7 @@ export default function AdminOrders() {
   const router = useRouter();
   const options = statusQueryToOptions(router.query?.status);
   const isFetching = useSelector(({ adminOrders }) => adminOrders.isFetching);
+  const user = useSelector(({ adminUsers }) => adminUsers.users?.find((user) => user.id === router.query.userID));
 
   useEffect(() => {
     let token;
@@ -84,7 +85,15 @@ export default function AdminOrders() {
 
   return (
     <>
-      <h2 className="text-2xl text-white">Pedidos</h2>
+      <h2 className="text-2xl text-white">
+        Pedidos
+        {`${
+          router.query.userID
+            ? ' de ' +
+              (user ? user.username + '#' + user.discriminator + ' (' + router.query.userID + ')' : router.query.userID)
+            : ''
+        }`}
+      </h2>
       <div className="text-white flex items-center mt-2 mb-5">
         Filtrar por estado:
         <CheckSelect
