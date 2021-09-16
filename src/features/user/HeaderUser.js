@@ -8,7 +8,7 @@ import { useSelector } from 'react-redux';
 const MenuItem = ({ children }) => <div className="flex px-4 py-2 font-medium hover:bg-gray-500">{children}</div>;
 
 const _UserMenu = ({ user }, ref) => (
-  <div className="absolute right-0 top-14 bg-gray-700 rounded-xl shadow-xl text-white w-60" ref={ref}>
+  <div className="absolute right-0 top-14 bg-gray-700 rounded-xl shadow-xl text-white w-60 z-20" ref={ref}>
     <style jsx>{`
       .enter {
         opacity: 0;
@@ -113,7 +113,7 @@ function Avatar({ user }) {
   const nodeRef = useRef(null);
   return (
     <div className="relative">
-      <button onClick={() => setIsMenuShowing(!isMenuShowing)} className="relative flex z-10">
+      <button onClick={() => setIsMenuShowing(!isMenuShowing)} className="relative flex z-20">
         <Image
           className="rounded-full"
           alt="Foto de perfil"
