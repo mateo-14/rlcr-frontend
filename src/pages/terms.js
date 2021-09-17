@@ -13,15 +13,14 @@ export default function Terms() {
           <h2 className="text-3xl">Consentimiento</h2>
           <p>
             Al utilizar el sitio web (rlgo.store), server (ID 863284179047677992) y bot (ID 857821146635567114) de
-            Discord, de la empresa RLGO STORE, reconoce que ha leído esta política de privacidad y acepta las prácticas
-            descritas en este documento con respecto a la recopilación el uso y la divulgación por parte de la empresa
-            de la información personal que nos proporcionó. Esta es la política de privacidad completa y exclusiva de la
-            compañía y reemplaza cualquier versión previa. Nos reservamos el derecho de cambiar esta política de
-            privacidad de acuerdo con los términos de este documento en cualquier momento, por lo que le recomendamos
-            que visite esta página con frecuencia, revise esta política de privacidad con frecuencia y se mantenga
-            informado sobre cualquier cambio.
+            Discord, de la empresa RLGO STORE, reconoce que ha leído estos términos y condiciones y acepta las prácticas
+            descritas en este documento con respecto a la recopilación, el uso y la divulgación por parte de la empresa
+            de la información personal que nos proporcionó. Estos son los términos y condiciones completos y exclusivos
+            de la companía y reemplaza cualquier versión previa. Nos reservamos el derecho de cambiar estos términos y
+            condiciones de este documento en cualquier momento, por lo que le recomendamos que visite esta página con
+            frecuencia y se mantenga informado sobre cualquier cambio.
             <br />
-            Si después de la revisión todavía tiene preguntas sobre alguna parte de esta política de privacidad,
+            Si después de la revisión todavía tiene preguntas sobre alguna parte de los términos y condiciones
             comuníquese con la empresa rlgo.store utilizando la información de contacto que se proporciona al final de
             los términos y condiciones.
           </p>
@@ -141,6 +140,13 @@ export default function Terms() {
             Para nuestra seguridad llevaremos a cabo la recopilación de la siguiente información al realizar una compra:
             nombre de usuario, cuenta desde la que se realizó la transferencia, dirección de IP publica y navegador
             donde se realizó el inicio el pedido.
+          </p>
+        </section>
+
+        <section className="mt-8">
+          <h2 className="text-3xl">Contacto</h2>
+          <p>
+            Server de Discord: <a href="https://discord.gg/8M3UEkj55J">https://discord.gg/8M3UEkj55J</a>
           </p>
         </section>
       </article>
