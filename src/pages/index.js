@@ -71,6 +71,10 @@ function Form() {
     setPm(currentTarget.value);
   };
 
+  useEffect(() => {
+    if (max) setCredits(Math.max(100, Math.min(Math.round(credits / 10) * 10, max)));
+  }, [max]);
+
   return (
     <div className="lg:row-span-2 bg-gray-700 sm:rounded-xl sm:shadow-xl px-6 py-10">
       {settings && !settings.sellEnabled && !settings.buyEnabled ? (
@@ -117,7 +121,6 @@ function Form() {
                   id="price"
                   value={Math.ceil(credits * (mode == 0 ? settings?.creditBuyValue : settings?.creditSellValue))}
                   min="100"
-                  max={max}
                   onChange={handleChange}
                   onBlur={handleBlur}
                   hint="$"
