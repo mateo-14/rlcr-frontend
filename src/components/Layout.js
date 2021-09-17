@@ -24,6 +24,10 @@ const Layout = ({ children, className = '' }) => (
         <a className="text-purple-400" href="https://rlgo.store">
           rlgo.store
         </a>
+        <br />
+        <a className="text-purple-400" href="https://rlgo.store/terms">
+          Términos y condiciones de uso
+        </a>
       </p>
     </footer>
   </div>

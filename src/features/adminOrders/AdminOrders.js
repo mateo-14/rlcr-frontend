@@ -240,8 +240,8 @@ function OrderRow({ settings, order, onMouseEnter, onMouseLeave, shownUser }) {
                 ></Image>
                 <span className="ml-3">{`${shownUser.username}#${shownUser.discriminator}`}</span>
               </div>
-              <span className="text-xs text-center w-full block mt-2">{shownUser.id}</span>
-              <span className="text-xs text-center w-full block mt-2">IP: {shownUser.ip}</span>
+              <span className="text-xs w-full block mt-2">{shownUser.id}</span>
+              <span className="text-xs w-full block mt-1">IP: {shownUser.ip}</span>
             </div>
           )}
         </span>
