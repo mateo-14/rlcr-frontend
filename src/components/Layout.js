@@ -21,20 +21,21 @@ const Layout = ({ children, className = '' }) => (
     <footer className="py-2">
       <p className="text-white text-center">
         Copyright © 2021 -{' '}
-        <a className="text-purple-400" href="https://rlgo.store">
-          rlgo.store
-        </a>
-        <br />
-        <Link href="/contact">
-          <a className="text-purple-400">Contacto</a>
-        </Link>
-        <br />
-        <Link href="/terms">
-          <a className="text-purple-400">Términos y condiciones de uso</a>
-        </Link>
-        <Link href="/privacy">
-          <a className="text-purple-400">Política de privacidad</a>
-        </Link>
+        <span className="text-purple-400">
+          <a href="https://rlgo.store">rlgo.store</a>
+          <br />
+          <Link href="/contact">
+            <a>Contacto</a>
+          </Link>
+          {' - '}
+          <Link href="/terms">
+            <a>Términos y condiciones de uso</a>
+          </Link>
+          {' - '}
+          <Link href="/privacy">
+            <a>Política de privacidad</a>
+          </Link>
+        </span>
       </p>
     </footer>
   </div>

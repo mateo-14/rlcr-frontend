@@ -55,7 +55,7 @@ export default function Privacy() {
           </p>
         </section>
         <section className="mt-8">
-          <h2 className="text-3xl">Política de privacidad</h2>
+          <h2 className="text-3xl">Datos</h2>
           <p>
             Hemos cifrado la información del miembro. En lo que respecta a la información de pedido, no se guardará ni
             estará disponible para nadie. no divulgamos esta información a ningún tercero.
