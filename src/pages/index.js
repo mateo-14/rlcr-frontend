@@ -101,7 +101,7 @@ function Form() {
             </TabButton>
           </div>
           <form onSubmit={handleSubmit}>
-            {settings ? (
+            {!settings ? (
               <FormSkeleton />
             ) : (
               <>
