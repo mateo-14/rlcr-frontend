@@ -101,7 +101,7 @@ function Form() {
             </TabButton>
           </div>
           <form onSubmit={handleSubmit}>
-            {!settings ? (
+            {settings ? (
               <FormSkeleton />
             ) : (
               <>
@@ -135,7 +135,7 @@ function Form() {
                     ))}
                   </select>
                 </div>
-                <p className="text-white text-3xl mt-4">
+                <p className="text-white text-3xl mt-5">
                   {`${mode == 0 ? 'Pagas' : 'Te pagamos'} ARS$ ${Math.ceil(
                     credits * (mode == 0 ? settings?.creditBuyValue : settings?.creditSellValue)
                   )} (Pesos argentinos)`}
@@ -167,16 +167,13 @@ const TabButton = ({ children, selected, disabled, onClick, rounded }) => (
 const FormSkeleton = () => (
   <div className="space-y-5">
     <div className="animate-pulse space-y-2">
-      <div className="h-6 bg-gray-500 rounded w-2/5"></div>
+      <div className="h-5 bg-gray-500 rounded w-2/5"></div>
       <div className="h-10 bg-gray-500 rounded"></div>
     </div>
     <div className="animate-pulse space-y-2">
-      <div className="h-6 bg-gray-500 rounded w-2/5"></div>
+      <div className="h-5 bg-gray-500 rounded w-2/5"></div>
       <div className="h-10 bg-gray-500 rounded"></div>
     </div>
-    <div className="animate-pulse space-y-2">
-      <div className="h-6 bg-gray-500 rounded w-2/5"></div>
-      <div className="h-10 bg-gray-500 rounded"></div>
-    </div>
+    <div className="h-10 bg-gray-500 rounded"></div>
   </div>
 );
