@@ -1,10 +1,12 @@
 import axios from 'axios';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import { useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import TableRowLoading from '../../components/TableRowLoading';
 import CheckSelect from '../../components/UI/CheckSelect';
+import OrdersProvider, { OrdersContext } from '../../contexts/AdminOrdersContext';
+import useOnClickOutside from '../../hooks/useOnClickOutside';
 import useSettings from '../../hooks/useSettings';
 import { formatter, STATUS } from '../../util';
 import { fetchUsers } from '../adminUsers/adminUsersSlice';
@@ -149,102 +151,24 @@ export default function AdminOrders() {
 }
 
 const OrdersList = () => {
-  const dispatch = useDispatch();
-  const timeout = useRef();
-  const settings = useSettings();
-  const { orders, users } = useSelector(({ adminOrders, adminUsers }) => ({
-    orders: adminOrders.orders,
-    users: adminUsers.users,
-  }));
-  const token = useRef();
-  const [shownUser, setShownUser] = useState();
-
-  const findUser = (order) => {
-    let user = users?.find((user) => user.id === order.userID);
-    if (user) {
-      setShownUser({ ...user, orderID: order.id });
-      return true;
-    }
-  };
-  const handleMouseEnter = (order) => {
-    if (findUser(order)) return;
-
-    timeout.current = setTimeout(() => {
-      token.current = axios.CancelToken.source();
-      dispatch(fetchUsers(token.current.token))
-        .unwrap()
-        .then(() => {
-          findUser(order);
-        })
-        .catch((err) => {
-          if (!err.isAxiosCancel && !err.name === 'ConditionError') {
-            alert('Hubo un error, decile al programadorcito de cuarta que mire la consola y el Log de Heroku');
-            console.error(err);
-          }
-        });
-    }, 200);
-  };
-
-  const cancel = () => {
-    token.current?.cancel();
-    token.current = null;
-    clearInterval(timeout.current);
-    timeout.current = null;
-  };
-
-  const handleMouseLeave = () => {
-    cancel();
-    setShownUser(null);
-  };
-
-  useEffect(() => () => cancel(), []);
-
+  const orders = useSelector(({ adminOrders }) => adminOrders.orders?.map((order) => order.id));
   return (
-    <>
-      {orders?.map((order) => (
-        <OrderRow
-          settings={settings}
-          order={order}
-          key={order.id}
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
-          shownUser={shownUser?.orderID === order.id ? shownUser : false}
-        />
+    <OrdersProvider>
+      {orders?.map((id) => (
+        <OrderRow id={id} key={id} />
       ))}
-    </>
+    </OrdersProvider>
   );
 };
 
-function OrderRow({ settings, order, onMouseEnter, onMouseLeave, shownUser }) {
-  const user = useSelector(({ adminUsers }) => adminUsers.users?.find((user) => user.id === order.userID));
-
+function OrderRow({ id }) {
+  const settings = useSettings();
+  const order = useSelector(({ adminOrders }) => adminOrders.orders?.find((order) => order.id === id));
   return (
     <tr>
       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-medium">{order.id}</td>
       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-medium">
-        <span
-          className="relative cursor-pointer hover:text-purple-500"
-          onMouseEnter={() => onMouseEnter(order)}
-          onMouseLeave={() => onMouseLeave(order)}
-        >
-          {user ? `${user.username}#${user.discriminator}` : order.userID}
-          {shownUser && (
-            <div className="absolute left-0 top-full bg-gray-800 rounded-xl shadow-xl text-white px-2 py-3 z-10 w-max">
-              <div className="flex items-center">
-                <Image
-                  className="rounded-full"
-                  alt="Foto de perfil"
-                  src={`https://cdn.discordapp.com/avatars/${shownUser.id}/${shownUser.avatar}.jpg`}
-                  height="42"
-                  width="42"
-                ></Image>
-                <span className="ml-3">{`${shownUser.username}#${shownUser.discriminator}`}</span>
-              </div>
-              <span className="text-xs w-full block mt-2">{shownUser.id}</span>
-              <span className="text-xs w-full block mt-1">IP: {shownUser.ip}</span>
-            </div>
-          )}
-        </span>
+        <UserCard order={order} />
       </td>
       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-medium">
         {new Date(order.createdAt).toLocaleString()}
@@ -269,11 +193,71 @@ function OrderRow({ settings, order, onMouseEnter, onMouseLeave, shownUser }) {
     </tr>
   );
 }
+function UserCard({ order }) {
+  const { showUser, showingUserOrderID } = useContext(OrdersContext);
+  const user = useSelector(({ adminUsers }) => adminUsers.users?.find((user) => user.id === order.userID));
+  const dispatch = useDispatch();
+  const timeout = useRef();
+  const token = useRef();
+
+  const handleMouseEnter = () => {
+    showUser(order.id);
+    if (!user) {
+      timeout.current = setTimeout(() => {
+        token.current = axios.CancelToken.source();
+        dispatch(fetchUsers(token.current.token));
+      }, 200);
+    }
+  };
+
+  const cancel = () => {
+    token.current?.cancel();
+    token.current = null;
+    clearInterval(timeout.current);
+    timeout.current = null;
+  };
+
+  const handleMouseLeave = () => {
+    showUser();
+    if (token.current) cancel();
+  };
+
+  useEffect(() => () => cancel(), []);
+
+  return (
+    <span
+      className="relative cursor-pointer hover:text-purple-500"
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+      {user ? `${user.username}#${user.discriminator}` : order.userID}
+      {showingUserOrderID === order.id && user && (
+        <div className="absolute left-0 top-full bg-gray-800 rounded-xl shadow-xl text-white px-2 py-3 z-10 w-max">
+          <div className="flex items-center">
+            <Image
+              className="rounded-full"
+              alt="Foto de perfil"
+              src={`https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.jpg`}
+              height="42"
+              width="42"
+            ></Image>
+            <span className="ml-3">{`${user.username}#${user.discriminator}`}</span>
+          </div>
+          <span className="text-xs w-full block mt-2">{user.id}</span>
+          <span className="text-xs w-full block mt-1">IP: {user.ip}</span>
+        </div>
+      )}
+    </span>
+  );
+}
+
 function OrderOptions({ order }) {
   const dispatch = useDispatch();
-  const [isShowing, setIsShowing] = useState(false);
+  const { showOptions, showingOptionsOrderID } = useContext(OrdersContext);
+  const ref = useRef();
 
-  const handleClick = () => setIsShowing(!isShowing);
+  useOnClickOutside(ref, () => showingOptionsOrderID === order.id && showOptions(null));
+  const handleClick = () => showOptions(showingOptionsOrderID === order.id ? null : order.id);
 
   const handleClickCopy = () => {
     navigator.permissions.query({ name: 'clipboard-write' }).then((result) => {
@@ -286,11 +270,11 @@ Te mandamos una solicitud con nuestra cuenta de EpicGames  **rlgostore** a **${o
 **_Verificá que el usuario que envió este mensaje es moderador en nuestro server de Discord RLGO STORE | Compra y venta de créditos para Rocket League_**`);
       }
     });
-    setIsShowing(false);
+    showOptions();
   };
 
   const handleClickComplete = () => {
-    setIsShowing(false);
+    showOptions();
     dispatch(updateOrder({ id: order.id, data: { status: 1, userID: order.userID } }))
       .unwrap()
       .catch((err) => {
@@ -300,7 +284,7 @@ Te mandamos una solicitud con nuestra cuenta de EpicGames  **rlgostore** a **${o
   };
 
   return (
-    <div className="relative">
+    <div className="relative" ref={ref}>
       <button onClick={handleClick}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -317,8 +301,8 @@ Te mandamos una solicitud con nuestra cuenta de EpicGames  **rlgostore** a **${o
           />
         </svg>
       </button>
-      {isShowing && (
-        <div className="absolute right-0 bg-gray-600 rounded-xl shadow-xl text-white flex flex-col py-3 text-c">
+      {showingOptionsOrderID === order.id && (
+        <div className="absolute right-0 bg-gray-600 rounded-xl shadow-xl text-white flex flex-col py-3 text-c z-10">
           <button className="hover:bg-gray-500 px-2 py-1 text-sm text-left" onClick={handleClickCopy}>
             Copiar mensaje
           </button>
