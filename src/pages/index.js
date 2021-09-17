@@ -115,7 +115,7 @@ function Form() {
                 <Input
                   type="number"
                   id="price"
-                  value={credits * (mode == 0 ? settings?.creditBuyValue : settings?.creditSellValue)}
+                  value={Math.ceil(credits * (mode == 0 ? settings?.creditBuyValue : settings?.creditSellValue))}
                   min="100"
                   max={max}
                   onChange={handleChange}

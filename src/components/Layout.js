@@ -25,9 +25,16 @@ const Layout = ({ children, className = '' }) => (
           rlgo.store
         </a>
         <br />
-        <a className="text-purple-400" href="https://rlgo.store/terms">
-          Términos y condiciones de uso
-        </a>
+        <Link href="/contact">
+          <a className="text-purple-400">Contacto</a>
+        </Link>
+        <br />
+        <Link href="/terms">
+          <a className="text-purple-400">Términos y condiciones de uso</a>
+        </Link>
+        <Link href="/privacy">
+          <a className="text-purple-400">Política de privacidad</a>
+        </Link>
       </p>
     </footer>
   </div>

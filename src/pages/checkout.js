@@ -51,9 +51,9 @@ export default function Checkout() {
             <>
               <p className="text-4xl text-white mb-10">{`Vas a ${
                 formData.mode === 0 ? 'comprar' : 'vender'
-              } ${credits} créditos a ARS$${
+              } ${credits} créditos a ARS$${Math.ceil(
                 (formData.mode === 0 ? settings.creditBuyValue : settings.creditSellValue) * credits
-              } por ${settings.paymentMethods[formData.paymentMethodID]?.name}`}</p>
+              )} por ${settings.paymentMethods[formData.paymentMethodID]?.name}`}</p>
               <Form formData={formData} onSubmit={handleSubmit} />
             </>
           ))}

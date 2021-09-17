@@ -142,13 +142,6 @@ export default function Terms() {
             donde se realizó el inicio el pedido.
           </p>
         </section>
-
-        <section className="mt-8">
-          <h2 className="text-3xl">Contacto</h2>
-          <p>
-            Server de Discord: <a href="https://discord.gg/8M3UEkj55J">https://discord.gg/8M3UEkj55J</a>
-          </p>
-        </section>
       </article>
     </Layout>
   );
