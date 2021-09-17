@@ -51,6 +51,7 @@ function Form() {
   const max = mode == 0 ? settings?.maxBuy : settings?.maxSell;
 
   const handleChange = ({ currentTarget }) => {
+    if (currentTarget.value.length > 5) return;
     setCredits(currentTarget.value);
   };
 
@@ -114,20 +115,8 @@ function Form() {
                   onBlur={handleBlur}
                   hint="CR"
                   step="10"
+                  maxLength={3}
                   label={mode == 0 ? 'Cuántos créditos querés?' : 'Cuántos créditos querés vender?'}
-                />
-                <Input
-                  type="number"
-                  id="price"
-                  value={Math.ceil(credits * (mode == 0 ? settings?.creditBuyValue : settings?.creditSellValue))}
-                  min="100"
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  hint="$"
-                  step="10"
-                  label={`${mode == 0 ? 'Pagas' : 'Te pagamos'} ARS$ (Pesos argentinos)`}
-                  disabled={mode != 0}
-                  className="mt-4"
                 />
                 <div className="mt-4">
                   <label htmlFor="paymentmet" className="block text-lg text-white">
@@ -146,6 +135,11 @@ function Form() {
                     ))}
                   </select>
                 </div>
+                <p className="text-white text-3xl mt-4">
+                  {`${mode == 0 ? 'Pagas' : 'Te pagamos'} ARS$ ${Math.ceil(
+                    credits * (mode == 0 ? settings?.creditBuyValue : settings?.creditSellValue)
+                  )} (Pesos argentinos)`}
+                </p>
               </>
             )}
             <Button className="mt-8 w-full" disabled={!settings}>
