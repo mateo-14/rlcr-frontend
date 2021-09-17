@@ -32,6 +32,7 @@ export default function AdminUsers() {
             <tr>
               <th className="py-3 px-6 text-left text-sm font-medium text-gray-300 uppercase">User</th>
               <th className="py-3 px-6 text-left text-sm font-medium text-gray-300 uppercase">ID</th>
+              <th className="py-3 px-6 text-left text-sm font-medium text-gray-300 uppercase">IP</th>
               <th className="py-3 px-6 text-left text-sm font-medium text-gray-300 uppercase">Pedidos</th>
             </tr>
           </thead>
@@ -54,6 +55,7 @@ export default function AdminUsers() {
                     }${user.isAdmin ? ' 😎' : ''}`}</span>
                   </td>
                   <td className="px-6 py-2 whitespace-nowrap text-sm font-medium">{user.id}</td>
+                  <td className="px-6 py-2 whitespace-nowrap text-sm font-medium">{user.ip}</td>
                   <td className="px-6 py-2 whitespace-nowrap text-sm font-medium">
                     <Link href={`/admin/orders?userID=${user.id}`}>
                       <a className="text-purple-500 hover:text-purple-400">Ver pedidos</a>
