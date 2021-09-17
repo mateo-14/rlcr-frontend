@@ -9,4 +9,5 @@ export const store = configureStore({
     adminOrders: adminOrdersReducer,
     adminUsers: adminUsersReducer,
   },
+  devTools: process.env.NODE_ENV !== 'production',
 });
