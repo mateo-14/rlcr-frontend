@@ -137,6 +137,7 @@ export default function AdminOrders() {
               <th className="px-6 py-3 text-left text-sm font-medium text-gray-300 uppercase">Precio</th>
               <th className="px-6 py-3 text-left text-sm font-medium text-gray-300 uppercase">Tipo</th>
               <th className="px-6 py-3 text-left text-sm font-medium text-gray-300 uppercase">Método</th>
+              <th className="px-6 py-3 text-left text-sm font-medium text-gray-300 uppercase">Cuenta de pago</th>
               <th className="px-6 py-3 text-left text-sm font-medium text-gray-300 uppercase">EpicGames</th>
               <th className="px-6 py-3 text-left text-sm font-medium text-gray-300 uppercase">Estado</th>
             </tr>
@@ -181,6 +182,7 @@ function OrderRow({ id }) {
       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-medium">
         {settings?.paymentMethods[order.paymentMethodID]?.name || '...'}
       </td>
+      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-medium">{order.paymentAccount}</td>
       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300 font-medium">{order.account}</td>
       <td className="px-6 py-4 whitespace-nowrap">
         <span className="px-2 text-xs leading-5 font-semibold rounded-full bg-purple-500 text-gray-300">
