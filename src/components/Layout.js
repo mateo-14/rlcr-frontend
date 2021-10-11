@@ -5,7 +5,7 @@ import HeaderUser from '../features/user/HeaderUser';
 
 const Layout = ({ children, className = '' }) => (
   <div className="bg-gray-800 min-h-screen flex flex-col">
-    <header className="mx-4 sm:mx-8 flex items-center h-24 justify-between" onClick="">
+    <header className="mx-4 sm:mx-8 flex items-center h-24 justify-between">
       <nav className="h-full flex items-center">
         <Link href="/">
           <a className="flex">

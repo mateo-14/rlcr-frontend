@@ -143,7 +143,7 @@ export default function AdminOrders() {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-600">
-            {isFetching ? <TableRowLoading cols={9} /> : <OrdersList />}
+            {isFetching ? <TableRowLoading cols={10} /> : <OrdersList />}
           </tbody>
         </table>
       </div>

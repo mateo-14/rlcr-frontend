@@ -38,7 +38,7 @@ export default function AdminUsers() {
           </thead>
           <tbody className="divide-y divide-gray-600">
             {adminUsers.isFetching ? (
-              <TableRowLoading cols={3} />
+              <TableRowLoading cols={4} />
             ) : (
               adminUsers.users?.map((user) => (
                 <tr className="text-gray-300" key={user.id}>
