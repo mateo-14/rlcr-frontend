@@ -106,7 +106,7 @@ export default function AdminOrders() {
           containerClass="ml-4"
         />
       </div>
-      <div className="overflow-auto rounded-xl bg-gray-700 " style={{ flex: '1 1 1px', minHeight: '700px' }}>
+      <div className="overflow-auto rounded-xl bg-gray-700 min-h-[700px] flex-[1_1_1px]" >
         <table className="table-auto divide-y divide-gray-600 w-full">
           <thead>
             <tr>

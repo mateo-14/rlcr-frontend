@@ -33,7 +33,8 @@ export default function Order() {
         setIsLoading(false);
       })
       .catch((err) => {
-        if (err.response && err.response.status === 401) dsAuthWithState({ route: 'orders', id: router.query.id });
+        if (err.response && err.response.status === 401)
+          dsAuthWithState({ route: 'orders', id: router.query.id });
         else router.push('/');
       });
   }, [router.query.id, router.query.state]);
@@ -49,47 +50,37 @@ export default function Order() {
         ) : (
           <>
             <h2 className="text-purple-500 text-2xl font-medium">Pedido {order?.id}</h2>
-            <p className="text-white text-lg mt-6 break-words	">
-              <span className="font-medium">Créditos:</span> {order.credits}
-              <br />
-              <span className="font-medium">Precio:</span> {formatter.format(order.price)}
-              <br />
-              <span className="font-medium">Tipo:</span> {order.mode === 0 ? 'Compra' : 'Venta'}
-              <br />
-              <span className="font-medium">Creado el:</span> {new Date(order.createdAt).toLocaleString()}
-              <br />
-              <span className="font-medium">Método de pago:</span>{' '}
-              {settings?.paymentMethods[order.paymentMethodID]?.name}
-              <br />
-              <span className="font-medium">Usuario de EpicGames:</span> {order.account}
-              {order.dni && (
-                <>
-                  <br />
-                  <span className="font-medium">DNI:</span> {order.dni}
-                </>
-              )}
-              {order.paymentAccount && (
-                <>
-                  <br />
-                  <span className="font-medium">
-                    Cuenta de {settings.paymentMethods[order.paymentMethodID].name}:
-                  </span>{' '}
-                  {order.paymentAccount}
-                </>
-              )}
-              {order.cvu && (
-                <>
-                  <br />
-                  <span className="font-medium">CVU/CBU:</span> {order.cvu}
-                </>
-              )}
-              <br />
-              <span className="font-medium">Estado: </span>
-              <span className={`px-2 font-semibold rounded-full bg-purple-500 text-gray-300 text-sm`}>
-                {STATUS[order.status]}
-              </span>
-              <br />
-            </p>
+            <ul className="text-white text-lg mt-4 mb-2">
+              <li>
+                <span className="font-medium">Créditos:</span> {order.credits}
+              </li>
+              <li>
+                <span className="font-medium">Precio:</span> {order.credits}
+              </li>
+              <li>
+                <span className="font-medium">Tipo:</span> {order.mode === 0 ? 'Compra' : 'Venta'}
+              </li>
+              <li>
+                <span className="font-medium">Pedido el:</span>{' '}
+                {new Date(order.createdAt).toLocaleString()}
+              </li>
+              <li>
+                <span className="font-medium">Método de pago:</span>{' '}
+                {settings?.paymentMethods[order.paymentMethodID]?.name}
+              </li>
+              <li>
+                <span className="font-medium">Usuario de Demo Games:</span> {order.account}
+              </li>
+              <li>
+                <span className="font-medium">
+                  Cuenta de {settings.paymentMethods[order.paymentMethodID].name}:
+                </span>
+                {order.paymentAccount}
+              </li>
+            </ul>
+            <span className={`px-2 font-semibold rounded-full bg-purple-500 text-gray-300 text-sm`}>
+              {STATUS[order.status]}
+            </span>
             <Link href="/orders" passHref>
               <LinkButton>Ver todos los pedidos</LinkButton>
             </Link>
