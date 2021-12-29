@@ -29,17 +29,15 @@ export default function Home() {
           <p className="text-4xl xl:text-5xl font-medium text-white">
             Compra créditos para Rocket League en pesos argentinos y sin impuestos!
           </p>
-          <p className="text-4xl xl:text-5xl font-medium text-purple-500 mt-2">+100 transacciones realizadas!</p>
+          <p className="text-4xl xl:text-5xl font-medium text-purple-500 mt-2">
+            +100 transacciones realizadas!
+          </p>
         </div>
         <Form />
         <ul className="text-white mx-2 sm:mx-0">
-          <li>
-            * Solo venta de créditos para PC (Steam y Epic Games)
-          </li>
-          <li>
-            * Esto es una Demo App. No se venden ni se compran créditos.
-          </li>
-        </ul>  
+          <li>* Solo venta de créditos para PC (Steam y Epic Games)</li>
+          <li>* Esto es una Demo App. No se venden ni se compran créditos.</li>
+        </ul>
       </section>
     </Layout>
   );
@@ -67,7 +65,14 @@ function Form() {
     e.preventDefault();
     router.push({
       pathname: '/checkout',
-      query: { c: encodeB64Object({ mode, credits, paymentMethodID: parseInt(pm) }) },
+      query: {
+        c: encodeB64Object({
+          mode,
+          credits,
+          paymentMethodID: parseInt(pm),
+          paymentMethodName: settings?.paymentMethods.find((method) => method.id === parseInt(pm)).name,
+        }),
+      },
     });
   };
 
@@ -82,7 +87,9 @@ function Form() {
   return (
     <div className="lg:row-span-2 bg-gray-700 sm:rounded-xl sm:shadow-xl px-6 py-10">
       {settings && !settings.sellEnabled && !settings.buyEnabled ? (
-        <p className="text-center text-white text-5xl font-medium">Compra y venta deshabilitada 🙁</p>
+        <p className="text-center text-white text-5xl font-medium">
+          Compra y venta deshabilitada 🙁
+        </p>
       ) : (
         <>
           <div className="w-full flex h-10 mb-8">
