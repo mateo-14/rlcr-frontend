@@ -24,7 +24,7 @@ export function useMode(settings) {
 export default function Home() {
   return (
     <Layout>
-      <section className="grid grid-cols-1 xl:grid-cols-index content-center items-center gap-x-16 gap-y-6 my-auto">
+      <section className="grid grid-cols-1 xl:grid-cols-[5fr_6fr] content-center items-center gap-x-16 gap-y-6 my-auto">
         <div className="mx-2 sm:mx-0">
           <p className="text-4xl xl:text-5xl font-medium text-white">
             Compra créditos para Rocket League en pesos argentinos y sin impuestos!
@@ -32,11 +32,14 @@ export default function Home() {
           <p className="text-4xl xl:text-5xl font-medium text-purple-500 mt-2">+100 transacciones realizadas!</p>
         </div>
         <Form />
-        <p className="text-white mx-2 sm:mx-0">
-          * Solo venta de créditos para PC (Steam y Epic Games)
-          <br />* Pagos por transferencia bancaria, enviar dinero por UALÁ y MercadoPago
-          <br />* Solo válido para Argentina
-        </p>
+        <ul className="text-white mx-2 sm:mx-0">
+          <li>
+            * Solo venta de créditos para PC (Steam y Epic Games)
+          </li>
+          <li>
+            * Esto es una Demo App. No se venden ni se compran créditos.
+          </li>
+        </ul>  
       </section>
     </Layout>
   );
@@ -154,7 +157,7 @@ function Form() {
 
 const TabButton = ({ children, selected, disabled, onClick, rounded }) => (
   <button
-    className={`flex-1 font-medium ${rounded} text-black text-sm uppercase disabled:opacity-50 ${
+    className={`flex-1 font-medium ${rounded} text-sm uppercase disabled:opacity-50 ${
       selected ? 'bg-purple-500 text-white' : 'bg-gray-600 text-gray-300'
     }`}
     onClick={onClick}
