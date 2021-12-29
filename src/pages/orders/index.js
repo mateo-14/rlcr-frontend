@@ -46,10 +46,7 @@ export default function Order() {
           <h2 className="text-3xl text-purple-500 font-medium text-center md:text-left">Pedidos</h2>
           {isLoading && <Loader size="w-8 h-8" className="ml-auto" />}
         </div>
-        <div
-          className="overflow-auto rounded-xl bg-gray-800 my-6"
-          style={{ flex: '1 1 1px', minHeight: '400px' }}
-        >
+        <div className="overflow-auto rounded-xl bg-gray-800 my-6 flex-[1_1_1px]">
           {settings &&
             orders.map((order) => (
               <Link href={`/orders/${order.id}?state=${encodeB64Object(order)}`} key={order.id}>

@@ -16,7 +16,9 @@ export default function AdminUsers() {
       .unwrap()
       .catch((err) => {
         if (!err.isAxiosCancel && !err.name === 'ConditionError') {
-          alert('Hubo un error, decile al programadorcito de cuarta que mire la consola y el Log de Heroku');
+          alert(
+            'Hubo un error, decile al programadorcito de cuarta que mire la consola y el Log de Heroku'
+          );
           console.error(err);
         }
       });
@@ -26,14 +28,22 @@ export default function AdminUsers() {
   return (
     <>
       <h2 className="text-2xl text-white">Users</h2>
-      <div className="overflow-auto rounded-xl bg-gray-700 mt-6" style={{ flex: '1 1 1px', minHeight: '400px' }}>
+      <div className="overflow-auto rounded-xl bg-gray-700 mt-6 min-h-[400px] flex-[1_1_1px]">
         <table className="table-auto divide-y divide-gray-600 w-full">
           <thead>
             <tr>
-              <th className="py-3 px-6 text-left text-sm font-medium text-gray-300 uppercase">User</th>
-              <th className="py-3 px-6 text-left text-sm font-medium text-gray-300 uppercase">ID</th>
-              <th className="py-3 px-6 text-left text-sm font-medium text-gray-300 uppercase">IP</th>
-              <th className="py-3 px-6 text-left text-sm font-medium text-gray-300 uppercase">Pedidos</th>
+              <th className="py-3 px-6 text-left text-sm font-medium text-gray-300 uppercase">
+                User
+              </th>
+              <th className="py-3 px-6 text-left text-sm font-medium text-gray-300 uppercase">
+                ID
+              </th>
+              <th className="py-3 px-6 text-left text-sm font-medium text-gray-300 uppercase">
+                IP
+              </th>
+              <th className="py-3 px-6 text-left text-sm font-medium text-gray-300 uppercase">
+                Pedidos
+              </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-600">
@@ -50,9 +60,9 @@ export default function AdminUsers() {
                       height="36"
                       width="36"
                     ></Image>
-                    <span className="ml-2" title={user.isAdmin ? 'Es admin 😎' : ''}>{`${user.username}#${
-                      user.discriminator
-                    }${user.isAdmin ? ' 😎' : ''}`}</span>
+                    <span className="ml-2" title={user.isAdmin ? 'Es admin 😎' : ''}>{`${
+                      user.username
+                    }#${user.discriminator}${user.isAdmin ? ' 😎' : ''}`}</span>
                   </td>
                   <td className="px-6 py-2 whitespace-nowrap text-sm font-medium">{user.id}</td>
                   <td className="px-6 py-2 whitespace-nowrap text-sm font-medium">{user.ip}</td>
