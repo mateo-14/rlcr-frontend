@@ -15,27 +15,18 @@ const Layout = ({ children, className = '' }) => (
       </nav>
       <HeaderUser />
     </header>
-    <main role="main" className={`container flex-grow flex flex-col mx-auto my-12 xl:my-8 md:px-4 ${className}`}>
+    <main
+      role="main"
+      className={`container flex-grow flex flex-col mx-auto my-12 xl:my-8 md:px-4 ${className}`}
+    >
       {children}
     </main>
     <footer className="py-2">
       <p className="text-white text-center">
         Copyright © 2021 -{' '}
-        <span className="text-purple-400">
-          <a href="https://rlgo.store">rlgo.store</a>
-          <br />
-          <Link href="/contact">
-            <a>Contacto</a>
-          </Link>
-          {' - '}
-          <Link href="/terms">
-            <a>Términos y condiciones de uso</a>
-          </Link>
-          {' - '}
-          <Link href="/privacy">
-            <a>Política de privacidad</a>
-          </Link>
-        </span>
+        <a href="https://rlgo.store" className="text-purple-400">
+          rlgo.store
+        </a>
       </p>
     </footer>
   </div>
